@@ -5,7 +5,7 @@ let socials;
 //const socials = [{name: 'Tiktok', link: 'https://tiktok.com/@devanthedank'}, {name: 'Twitch', link: 'https://twitch.tv/devanqueue'}]
 const fetchSocials = async () =>
 {
-    const response = await fetch('http://localhost:3000/api/devan');
+    const response = await fetch('/api/devan');
     socials = await response.json();
 }
 
