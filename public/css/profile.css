@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+:root {
+    --profile-color: cyan;
+}
+
+body {
+    text-align: center;
+    background: hotpink;
+    color: black;
+    font-family: Montserrat, sans-serif;
+    line-height: 10px;
+}
+
+#social-card {
+    background-color: white;
+    box-shadow: 0 0 5px 5px;
+    width: 30%;
+    min-width: 200px;
+    padding: 50px 5px;
+    margin: auto;
+    margin-top: 10%;
+    border-radius: 30px;
+}
+
+#social-list {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-flow: column wrap;
+    align-items: center;
+}
+
+.social-element {
+    height: 65px;
+    width: 200px;
+    /* border-radius: 15px; */
+    margin: 10px 0;
+    background-color: #00ccff;
+    border: none;
+    position: relative;
+
+    font-weight: bold;
+    font-size: 100%;
+    line-height: 0;
+
+    transition: background-color 0.1s ease; 
+    transition: transform 0.1s linear;
+}
+
+.social-element:hover {
+    /* box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2); */
+    /* background-color: #00ffff; */
+    cursor: pointer;
+    transform: translate(-2px, -2px);
+}
+
+.social-element::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    box-shadow: 4px 4px 5px rgba(0,0,0,0.5);
+    transition: opacity .1s linear;
+
+    right: 0;
+}
+
+.social-element:hover::after {
+    opacity: 1;
+}
+
+.social-text {
+    color: black;
+    line-height: 10px;
+}
+
+.social-desc {
+    color: slategrey;
+    font-style: italic;
+}
+
+.text-container {
+    text-align: left;
+    display: inline-block;
+    margin-right: 20px;
+    padding: 0;
+}
+
+.social-img {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    float: left;
+    display: inline-block;
+}
+
+#logo {
+    width: 75px;
+    margin-top: 50px;
+    padding: 0;
+    position: relative;
+    display: inline;
+
+    transition: transform 0.2s  ease;
+}
+
+#logo:hover {
+    transform: scale(1.1);
+}
+
+
+@media only screen and (max-width: 768px) {
+    #social-card {
+        width: 100%;
+        height: 100%;
+        box-shadow: none;
+        background: hotpink;
+    }
+    body {
+        overflow: hidden;
+    }
+    #logo {
+        margin: 0;
+    }
+}
