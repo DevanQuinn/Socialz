@@ -7,24 +7,25 @@
 
 body {
     text-align: center;
-    background: hotpink;
+    background: rgb(244,104,246);
+    background: linear-gradient(90deg, rgba(244,104,246,1) 0%, rgba(255,56,107,1) 100%);
+    background-size: 100%;
     color: black;
-    font-family: "Russo One", sans-serif;
+    font-family: "montserrat", sans-serif;
+    font-weight: bold;
     letter-spacing: 1px;
     line-height: 10px;
 }
 
 #social-card {
     background-color: white;
-    box-shadow: 0 0 25px 3px;
-    width: 30%;
+    box-shadow: 15px 15px 25px 0;
+    max-width: 50%;
     min-width: 200px;
     padding: 50px 5px;
     margin: 0 auto;
-    /* margin-top: 10%; */
     position: relative;
     padding: 75px 0;
-    /* border-radius: 30px; */
 }
 
 #social-list {
@@ -36,7 +37,7 @@ body {
 }
 
 #pfp {
-    border: 5px solid white;
+    box-shadow: 0 0 30px -10px;
     width: 150px;
     height: 150px;
     border-radius: 100px;
@@ -45,18 +46,12 @@ body {
     top: 75px;
     margin: 0 auto;
     z-index: 1;
-
-    transition: border-radius 0.2s ease;
-}
-
-#pfp:hover {
-    border-radius: 60px;
 }
 
 .social-element {
     height: 65px;
-    width: 200px;
-    border-radius: 5px;
+    min-width: 250px;
+    /* border-radius: 5px; */
     margin: 10px 0;
     background-color: #00ccff;
     border: none;
@@ -107,7 +102,7 @@ body {
 .text-container {
     text-align: left;
     display: inline-block;
-    margin-right: 20px;
+    margin-right: 12%;
     padding: 0;
 }
 
@@ -124,11 +119,12 @@ body {
     width: 75px;
     padding: 0;
     margin: 0 auto;
-    position: relative;
+    position: absolute;
     display: inline;
     transition: transform 0.2s  ease;
     z-index: 1;
-    margin-top: -1.5%;
+    margin-top: 3%;
+    left: 96%;
 }
 
 #logo:hover {
@@ -141,20 +137,39 @@ body {
 
 @media only screen and (max-width: 1024px) {
     #social-card {
-        width: 100%;
-        height: 100%;
+        max-width: 80%;
+        max-height: 100%;
+        min-height: 10%;
+        padding-bottom: 10%;
         box-shadow: none;
-        background: hotpink;
-        padding: 0;
+        border-radius: 20px;
+ 
     }
-    body {
-        overflow: hidden;
+
+
+    .social-element,
+    .social-element:hover,
+    .social-element:hover::after {
+        box-shadow: none;
+        transform: none;
+    }
+
+    .social-element:active {
+        transform: scale(0.9);
     }
     #logo {
         margin-top: 5%;
+        position: relative;
+        left: 0;
+    }
+    #logo:hover {
+        transform: none;
+    }
+    #logo:active {
+        transform: scale(0.9);
     }
     #pfp {
-        left: 7px;
-        top: 10px;
+        margin-top: -7%;
     }
+    
 }

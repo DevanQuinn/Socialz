@@ -18,6 +18,7 @@ const fetchSocials = async () =>
     userData = resJson[0];
     socials = resJson[1];
     profileHeader.innerHTML = userData.displayName;
+    document.querySelector('title').innerText = userData.displayName + ' | Cherrylink';
 }
 
 const generateSocials = async (e, i) =>
