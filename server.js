@@ -11,7 +11,7 @@ const socials = {
     {name: 'Twitter', link: 'https://twitter.com/devanqueue', image: '../../src/twitter.png'}]
 };
 const userData = {
-    devan: { displayName: 'Devan', location: 'Hoboken NJ', bio: 'Creator of cherrylink.io' }
+    devan: { displayName: 'Devan', location: 'Hoboken NJ', bio: 'Creator of cherrylink.io', pfp: '../../src/pfp.png' }
 }
 
 const reservedKeywords = ['p'];

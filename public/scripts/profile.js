@@ -27,13 +27,18 @@ const generateSocials = async (e, i) =>
     button.className = 'social-element';
     list.appendChild(button);
 
+    const pfp = document.getElementById('pfp');
     const profileName = document.getElementById('profile-name');
     const profileLocation = document.getElementById('profile-location');
     const profileBio = document.getElementById('profile-bio');
 
+    pfp.src = userData.pfp;
+    const srcSplit = userData.pfp.split('/');
+    pfp.alt = srcSplit[srcSplit.length];
+
     profileName.innerText = userData.displayName;
-    if (userData.location) profileLocation.innerText = userData.location;
-    profileBio.innerText = userData.bio;
+    if (userData.location) profileLocation.innerText = '📍 ' + userData.location;
+    profileBio.innerText = '💬 ' + userData.bio;
 
     const img = document.createElement('img');
     img.src = e.image;

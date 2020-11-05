@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Russo+One&display=swap');
 
 :root {
     --profile-color: cyan;
@@ -8,19 +9,22 @@ body {
     text-align: center;
     background: hotpink;
     color: black;
-    font-family: Montserrat, sans-serif;
+    font-family: "Russo One", sans-serif;
+    letter-spacing: 1px;
     line-height: 10px;
 }
 
 #social-card {
     background-color: white;
-    box-shadow: 0 0 5px 5px;
+    box-shadow: 0 0 25px 3px;
     width: 30%;
     min-width: 200px;
     padding: 50px 5px;
-    margin: auto;
-    margin-top: 10%;
-    border-radius: 30px;
+    margin: 0 auto;
+    /* margin-top: 10%; */
+    position: relative;
+    padding: 75px 0;
+    /* border-radius: 30px; */
 }
 
 #social-list {
@@ -31,10 +35,28 @@ body {
     align-items: center;
 }
 
+#pfp {
+    border: 5px solid white;
+    width: 150px;
+    height: 150px;
+    border-radius: 100px;
+    position: relative;
+    display: inline;
+    top: 75px;
+    margin: 0 auto;
+    z-index: 1;
+
+    transition: border-radius 0.2s ease;
+}
+
+#pfp:hover {
+    border-radius: 60px;
+}
+
 .social-element {
     height: 65px;
     width: 200px;
-    /* border-radius: 15px; */
+    border-radius: 5px;
     margin: 10px 0;
     background-color: #00ccff;
     border: none;
@@ -95,16 +117,18 @@ body {
     height: 100%;
     float: left;
     display: inline-block;
+    border-radius: 5px;
 }
 
 #logo {
     width: 75px;
-    margin-top: 50px;
     padding: 0;
+    margin: 0 auto;
     position: relative;
     display: inline;
-
     transition: transform 0.2s  ease;
+    z-index: 1;
+    margin-top: -1.5%;
 }
 
 #logo:hover {
@@ -112,17 +136,25 @@ body {
 }
 
 
-@media only screen and (max-width: 768px) {
+
+
+
+@media only screen and (max-width: 1024px) {
     #social-card {
         width: 100%;
         height: 100%;
         box-shadow: none;
         background: hotpink;
+        padding: 0;
     }
     body {
         overflow: hidden;
     }
     #logo {
-        margin: 0;
+        margin-top: 5%;
+    }
+    #pfp {
+        left: 7px;
+        top: 10px;
     }
 }
