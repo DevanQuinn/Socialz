@@ -1,38 +1,46 @@
-:root {
-    --profile-color: cyan;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
 
 body {
+    font-family: 'Montserrat', sans-serif;
     text-align: center;
     background: hotpink;
     color: white;
 }
 
-#social-list {
+nav {
+    position: relative;
+    top: 0;
+    margin-bottom: 50px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 30%;
-    padding: 50px 10px;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+}
+
+
+.nav-item {
+    margin: 15px;
+}
+
+.left-side-nav {
+    display: flex;
+}
+
+.right-side-nav {
+    display: flex;
+}
+
+.image-text-combo {
+    width: 50%;
     margin: 0 auto;
-    border-radius: 30px;
+    margin-top: 100px;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
 }
 
-.social-element {
-    height: 50px;
-    width: 125px;
-    border-radius: 25px;
-    margin: 10px 0;
-    background-color: #00ccff;
-    border: none;
-
-    font-weight: bold;
-    font-size: 100%;
-
-    transition: background-color 0.1s ease; 
+#footer {
+    margin-top: 100px;
+    position: relative;
+    bottom: 0;
 }
 
-.social-element:hover {
-    background-color: #00ffff;
-}

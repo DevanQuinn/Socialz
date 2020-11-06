@@ -12,7 +12,7 @@ const camelCase = (str) =>
 const fetchSocials = async () =>
 {
     // domain/:username
-    username = window.location.href.split('/')[3];
+    username = window.location.href.split('/')[3].toLowerCase();
     const response = await fetch('/api/' + username);
     const resJson = await response.json();
     userData = resJson[0];
