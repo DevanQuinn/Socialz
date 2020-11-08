@@ -10,7 +10,7 @@ body {
     background: rgb(244,104,246);
     background: linear-gradient(90deg, rgba(244,104,246,1) 0%, rgba(255,56,107,1) 100%);
     color: white;
-    font-size: 24px;
+    font-size: 18px;
 }
 
 .form-container {
@@ -21,7 +21,7 @@ body {
     min-width: 450px;
     padding: 50px;
     margin: 0 auto;
-    margin-top: 5%;
+    margin-top: 2%;
     padding-bottom: 0;
 }
 
@@ -33,14 +33,15 @@ form {
 }
 
 .input-node {
-    text-align: left;
     margin: 30px;
+    text-align: left;
+    margin-left: -15%;
 }
 
 .reorder {
     display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
+    flex-flow: column-reverse nowrap;
+    align-items: flex-start;
 }
 
 input {
@@ -55,11 +56,9 @@ input:focus + label {
     color: hotpink;
 }
 
-
-
 label {
     font-size: 0.9em;
-    margin-left: -120%;
+    margin-left: 0;
 }
 
 .forgot {
@@ -99,15 +98,25 @@ a {
     transition: background 0.2s, color 0.2s;
 }
 
-.form-submit:hover {
+.form-submit:enabled:hover {
     background: hotpink;
     color: white;
+}
+
+.form-submit:disabled {
+    opacity: 0.5;
+    color: white;
+    border: 2px solid var(--background);
+}
+
+.form-submit:disabled:hover {
+    cursor: default;
 }
 
 #logo {
     position: relative;
     display: inline;
-    width: 5em;
+    width: 75px;
     left: 55%;
     top: 25px;
 }
@@ -120,6 +129,7 @@ a {
     body {
         font-size: 24px;
         margin-top: -5%;
+        background: hotpink;
     }
 
 
@@ -137,6 +147,7 @@ a {
         border-radius: 20px;
         padding-left: 10px;
         margin-left: -10px;
+        width: 120%;
     }
 
     input:focus {
@@ -146,10 +157,6 @@ a {
 
     input:focus + label {
         color: white;
-    }
-
-    label {
-        margin-left: -110%;
     }
 
     .forgot {
@@ -168,7 +175,7 @@ a {
     }
 
     .form-submit {
-        width: 50%;
+        width: 60%;
         padding: 20px;
         font-size: 1.25em;
         background: var(--background);
@@ -177,7 +184,7 @@ a {
         transition: none;
     }
 
-    .form-submit:hover {
+    .form-submit:enabled:hover {
         background: var(--background);
         color: white;
     }
