@@ -46,6 +46,7 @@ body {
     top: 75px;
     margin: 0 auto;
     z-index: 1;
+    background: white;
 }
 
 .social-element {
