@@ -10,43 +10,46 @@
 <body>
     <div class="form-container">
         <h1>Glad to have you here!</h1>
-        <form>
+        <form action="/signup/submit", method="POST">
             <div class="input-node">
                 <div class="reorder">
-                    <input name="email" id="email" autocomplete="email">
+                    <input name="email" id="email" type="email" required>
                     <label for="email">Email</label>
                 </div>
+                <h4 id="email-error" class="error"></h4>
             </div>
 
             <div class="input-node">
                 <div class="reorder">
-                    <input name="username" id="username" autocomplete="username">
+                    <input name="username" id="username" type="username" required>
                     <label for="username">Username</label>
                 </div>
+                
+                <h4 id="username-error" class="error"></h4>
             </div>
 
             <div class="input-node">
                 <div class="reorder">
-                    <input name="password" id="password" type="password">
+                    <input name="password" id="password" type="password" required>
                     <label for="password">Password</label>
                 </div>
+                <h4 id="password-error" class="error"></h4>
             </div>
 
             <div class="input-node">
                 <div class="reorder">
-                    <input name="password2" id="password2" type="password">
+                    <input name="password2" id="password2" type="password" required>
                     <label for="password2">Confirm Password</label>
                 </div>
+                <h4 id="password2-error" class="error"></h4>
             </div>
 
 
-            <button type="submit" class="form-submit">Sign Up</button>
+            <button type="submit" class="form-submit" disabled>Sign Up</button>
             <a href="login">I Have An Account</a>
         </form>
         <a href="/"><img id='logo' src='../src/logo.png'/></a>
     </div>
-
-    <h1 id="message">No error</h1>
     
     <script src="../scripts/signup.js"></script>
 </body>

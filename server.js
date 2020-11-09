@@ -9,6 +9,7 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.static('public'));
 app.use(express.static('src'));
+app.use(express.urlencoded({ extended: false }));
 
 app.set('case sensitive routing', false);
 
@@ -21,5 +22,7 @@ app.get('/',  (req, res) =>
 app.use('/', require('./routes/user'));
 
 app.use('/p/', require('./routes/page'));
+
+app.use('/signup/submit', require('./routes/auth'));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
