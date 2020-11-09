@@ -1,3 +1,4 @@
+const body = document.querySelector('body');
 const button = document.getElementsByClassName('form-submit')[0];
 const form = document.querySelector('form');
 
@@ -48,9 +49,10 @@ formInputs[2].dependency = formInputs[formInputs.length - 1];
 
 const checkError = (element, dependency = undefined) =>
 {
+    let errorsLocal = [];
     element.conditions.forEach((e, i) =>
     {
-        let isValid;
+        let isValid = false;
         const errorId = element.node.getAttribute('id') + String(i);
         if (e.condition(element.value))
         {
@@ -60,28 +62,30 @@ const checkError = (element, dependency = undefined) =>
                 errorNode = document.createElement('h4');
                 errorNode.setAttribute('id', errorId);
                 errorNode.setAttribute('class', 'error');
-                //element.node.parentNode.parentNode.appendChild(errorNode);
                 const errorFlex = document.getElementById('error-flex' + String(formInputs.indexOf(element) + 1));
                 errorFlex.appendChild(errorNode);
             }
             errorNode.innerText = element.message[i];
             errorNode.style.color = 'red';
-            if (!errors.includes(element.message[i])) errors.push(element.message[i]);
+            if (!errors.includes(element.message[i])) { errors.push(element.message[i]); errorsLocal.push(element.message[i]) };
+            isValid = false;
         }
         else
         {
             if (errors.includes(element.message[i]))
             {
-                errors.splice(errors.indexOf(element.message), 1);
+                errors.splice(errors.indexOf(element.message[i]), 1);
+                errorsLocal.splice(errors.indexOf(element.message[i]), 1);
                 const errorNode = document.getElementById(errorId);
                 errorNode.innerText = null;
             }
             element.errorNode.style.color = 'green';
+            isValid = true;
         };
-        isValid = (errors.length === 0) && (element.node.checkValidity());
         element.errorNode.innerText = isValid ? '✔' : null;
     })
-    if (dependency && element.value !== '') return checkError(dependency);
+    if (dependency && element.value !== '') checkError(dependency);
+    return errorsLocal.length == 0;
 }
 
 const checkIfFilled = () =>
@@ -96,12 +100,30 @@ const checkIfFilled = () =>
 }
 
 
-formInputs.forEach((element) =>
+let validArr = [false, false, false, false];
+const isValidArr = () =>
+{
+    for (let i in validArr)
+    {
+        if (validArr[i] == false)
+        {
+            return false
+        }
+    }
+    return true;
+}
+
+formInputs.forEach((element, index) =>
 {
     element.node.oninput = () =>
     {
         element.value = element.node.value;
-        checkError(element, element.dependency);
-        button.disabled = !(errors.length === 0 && form.checkValidity());
+        validArr[index] = checkError(element, element.dependency);
+        button.disabled = !((errors.length == 0) && isValidArr());
     }
 })
+
+body.onload = () =>
+{
+    document.getElementById('email').focus();
+}
