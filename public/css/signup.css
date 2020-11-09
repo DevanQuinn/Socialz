@@ -77,8 +77,12 @@ label {
 
 .error {
     margin: 0;
-    color: red;
-    position: relative;
+}
+
+.error-flex {
+    position: absolute;
+    display: flex;
+    flex-flow: column nowrap;
 }
 
 .forgot {

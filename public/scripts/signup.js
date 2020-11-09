@@ -60,7 +60,9 @@ const checkError = (element, dependency = undefined) =>
                 errorNode = document.createElement('h4');
                 errorNode.setAttribute('id', errorId);
                 errorNode.setAttribute('class', 'error');
-                element.node.parentNode.parentNode.appendChild(errorNode);
+                //element.node.parentNode.parentNode.appendChild(errorNode);
+                const errorFlex = document.getElementById('error-flex' + String(formInputs.indexOf(element) + 1));
+                errorFlex.appendChild(errorNode);
             }
             errorNode.innerText = element.message[i];
             errorNode.style.color = 'red';
