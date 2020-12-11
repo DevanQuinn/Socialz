@@ -12,11 +12,16 @@ const camelCase = (str) =>
 const fetchSocials = async () =>
 {
     // domain/:username
-    username = window.location.href.split('/')[3].toLowerCase();
+    username = window.location.href.split('/')[3];
     const response = await fetch('/api/' + username);
-    const resJson = await response.json();
-    userData = resJson[0];
-    socials = resJson[1];
+    const profile = await response.json();
+    userData = {
+        username: profile.username,
+        displayName: profile.displayName,
+        location: profile.location,
+        bio: profile.bio
+    }
+    socials = profile.socials;
     profileHeader.innerHTML = userData.displayName;
     document.querySelector('title').innerText = userData.displayName + ' | Cherrylink';
 
@@ -26,10 +31,10 @@ const fetchSocials = async () =>
     const profileLocation = document.getElementById('profile-location');
     const profileBio = document.getElementById('profile-bio');
 
-    //Profile Picture (User Data)
-    pfp.src = userData.pfp;
-    const srcSplit = userData.pfp.split('/');
-    pfp.alt = srcSplit[srcSplit.length];
+    //TODO: Profile Picture (User Data)
+    // pfp.src = userData.pfp;
+    // const srcSplit = userData.pfp.split('/');
+    // pfp.alt = srcSplit[srcSplit.length];
 
     profileName.innerText = userData.displayName;
     if (userData.location) profileLocation.innerText = '📍 ' + userData.location;
@@ -50,10 +55,11 @@ const generateSocials = async (e, i) =>
     button.className = 'social-element';
     linkOpener.appendChild(button);
 
-    const img = document.createElement('img');
-    img.src = e.image;
-    img.className = 'social-img';
-    button.appendChild(img);
+    //  TODO: implement img storage w/ mongo
+    // const img = document.createElement('img');
+    // img.src = e.image;
+    // img.className = 'social-img';
+    // button.appendChild(img);
 
     const textContainer = document.createElement('div');
     textContainer.className = 'text-container';
@@ -74,5 +80,5 @@ const body = document.querySelector('body');
 body.onload = async () =>
 {
     await fetchSocials();
-    socials.forEach(generateSocials);
+    if (socials) socials.forEach(generateSocials);
 }

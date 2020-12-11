@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
+const { Account, Profile } = require('../data/mongodb');
+
 
 const socials = {
     devan: [{ name: 'Tiktok', link: 'https://tiktok.com/@devanthedank', image: '../../src/social-media/tiktok_final.png'},
@@ -13,26 +15,32 @@ const userData = {
     devan: { displayName: 'Devan', location: 'Hoboken NJ', bio: 'Creator of cherrylink.io', pfp: '../../src/pfp.png' }
 }
 
-const reservedKeywords = ['p'];
+const reservedKeywords = ['p', 'api', 'dashboard', 'cookies'];
 
 const notFound = (res) => res.sendFile(path.resolve(__dirname, '..', 'public', 'pages', '_hidden', 'notfound.html'));
 
 router.get('/:username', (req, res, next) =>
 {
-    const username = req.params.username.toLowerCase();
-    if (socials[username] && !reservedKeywords.find(val => val === username))
+    const username = req.params.username;
+    if (!reservedKeywords.includes(username.split('/')[0]))
     {
         res.sendFile(path.resolve(__dirname, '..', 'public', 'pages', '_hidden', 'profile.html'));
-    } else
-    {
-        notFound(res);
     }
 })
 
 router.get('/api/:username', (req, res) =>
 {
     const username = req.params.username;
-    res.json([userData[username], socials[username]]);
+
+    Account.findOne({ username }).select('username').lean().exec().then(acc =>
+    {
+        if (acc) Profile.findOne({ _id: acc._id }).exec().then(doc =>
+        {
+            if (doc) res.send(doc);
+            else res.sendStatus(404);
+        }).catch(err => res.status(500).send(err));
+        else res.sendStatus(404);
+    }).catch(err => res.status(500).send(err));
     
 })
 

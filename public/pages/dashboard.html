@@ -1,0 +1,36 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Dashboard</title>
+
+</head>
+<body>
+    <h1>Dashboard</h1>
+    
+    <form id="general-info" style="display: flex; flex-direction: column; align-items: center;">
+        <h3>About Yourself</h3>
+        <input id="profile-picture" name="profile-picture" class="filepond" type="file" accept="image/png, image/jpeg" />
+
+        <label for="display-name">Display Name</label>
+        <input id="display-name" name="display-name" class="general-input"/>
+
+        <label for="location">Location</label>
+        <input id="location" name="location" class="general-input"/>
+     
+        <label for="bio">Bio</label>
+        <input id="bio" name="bio"class="general-input" />
+
+        <button id="general-submit">Save</button>
+    </form>
+    <button id="add-profile">Add Link</button>
+
+    <span id="background-card" style="visibility: hidden; position: absolute; background: rgba(0, 0, 0, 0.5); height: 100%; width: 100%; top: 0px; left: 0">
+        <button type="button" id="card-close">Close</button>
+        <div id="image-card" style="background: white; position: absolute; height: 70vh; width: 50vw; top: 75px; right: 400px; opacity: 1"></div>
+    </span>
+    <div id="socials">
+    </div>
+    <script type="module" src="../scripts/dashboard.js"></script>
+</body>
+</html>

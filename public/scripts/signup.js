@@ -1,10 +1,16 @@
+fetch('/cookies/api').then(res =>
+{
+    if (res.status == 200) location.href = '/p/dashboard';
+}).catch()
+
 const body = document.querySelector('body');
 const button = document.getElementsByClassName('form-submit')[0];
-const form = document.querySelector('form');
+//const form = document.getElementsByClassName('form')[0];
 
 const errors = [];
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+const usernameRegex = /[^A-Za-z0-9]+/;
 const passwordRegex = /\d/;
 
 // Used to keep track of validation requirements and error messages
@@ -14,28 +20,25 @@ const formInputs =
         node: document.getElementById('email'),
         errorNode: document.getElementById('email-error'),
         value: '',
-        conditions: [
-            { condition(value) { return !(emailRegex.test(value.toLowerCase())) } }
-        ]
-        ,
+        conditions: [{ condition(value) { return !(emailRegex.test(value.toLowerCase())) } }],
         message: ['Email invalid.'],
     },
     {
         node: document.getElementById('username'),
         errorNode: document.getElementById('username-error'),
         value: '',
-        conditions: [{ condition(value) { return value.includes[' '] } }],
-        message: ['Username must not contain whitespaces.']
+        conditions: [{ condition(value) { return (usernameRegex.test(value)) } }, { condition(value) { return value.length > 16 } }],
+        message: ['Username may only contain letters and numbers.', 'Username must not be more than 16 characters.']
         },
     {
-        node: document.getElementById('password'),
+        node: document.getElementById('password1'),
         errorNode: document.getElementById('password-error'),
         value: '',
         conditions: [
             { condition(value) { return value.length < 6 }, },
             { condition(value) { return !(passwordRegex.test(value)) } }
         ],
-        message: ['Password must be longer than 6 characters.', 'Password must contain at least one digit.']
+        message: ['Must be longer than 6 characters.', 'Must contain at least one digit.']
         },
     {
         node: document.getElementById('password2'),
@@ -48,11 +51,12 @@ const formInputs =
 
 formInputs[2].dependency = formInputs[formInputs.length - 1];
 
-
-//Unused rn, maybe in future
+let validArr = [false, false, false, false];
+//Used for displaying error messages under specific form input fields
 const invalidateMsg = (element, index = 0, msg = 'An error has occurred.') =>
 {
-    const errorId = element.node.getAttribute('id') + String(index);
+    const errorId = index == -1 ? 'backend-error': element.node.getAttribute('id') + String(index);
+    element.errorNode.innerText = null;
     let errorNode = document.getElementById(errorId);
     if (!errorNode)
     {
@@ -64,7 +68,7 @@ const invalidateMsg = (element, index = 0, msg = 'An error has occurred.') =>
     }
     errorNode.innerText = msg;
     errorNode.style.color = 'red';
-
+    validArr[formInputs.indexOf(element)] = false;
     element.node.addEventListener('input', () => errorNode.remove());
 }
 
@@ -88,7 +92,7 @@ const checkError = (element, dependency = undefined) =>
                 const errorFlex = document.getElementById('error-flex' + String(formInputs.indexOf(element) + 1));
                 errorFlex.appendChild(errorNode);
             }
-            errorNode.innerText = element.message[i];
+            errorNode.innerText = '• ' + element.message[i];
             errorNode.style.color = 'red';
             if (!errors.includes(element.message[i])) { errors.push(element.message[i]); errorsLocal.push(element.message[i]) };
             isValid = false;
@@ -112,7 +116,7 @@ const checkError = (element, dependency = undefined) =>
 }
 
 // Honestly a pretty bad way to check if all form inputs are valid
-let validArr = [false, false, false, false];
+
 const isValidArr = () =>
 {
     for (let i in validArr)
@@ -127,36 +131,81 @@ const isValidArr = () =>
 
 const backError = document.getElementById('backend-error');
 
+let canBeEnabled;
 // Checks for errors and enables button accordingly based on each key typed
 formInputs.forEach((element, index) =>
 {
+    element.node.value = '';
     element.node.addEventListener('input', () =>
     {
         //if (backError) backError.innerText = null;
         element.value = element.node.value;
         validArr[index] = checkError(element, element.dependency);
-        button.disabled = !((errors.length == 0) && isValidArr());
+        canBeEnabled = ((errors.length == 0) && isValidArr());
+        button.disabled = !canBeEnabled
     })
 })
+
+const dynamicFetch = async (obj, index, msg) => 
+{
+    button.disabled = true;
+    const prevVal = obj.email || obj.username;
+    await fetch('/api/signup/submit/usercheck', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(obj)
+    }).then(async res =>
+    {
+        const resJson = await res.json();
+        if (resJson && prevVal == formInputs[index].value)
+        {
+            invalidateMsg(formInputs[index], 0, msg)
+        }
+        else button.disabled = !canBeEnabled;
+    }).catch(err => console.log(err));
+}
+
+//Checks for username availability when user leaves the input field
+formInputs[0].node.addEventListener('input', () => dynamicFetch({ email: formInputs[0].value }, 0, 'Email already in use.'));
+formInputs[1].node.addEventListener('input', () => dynamicFetch({ username: formInputs[1].value }, 1, 'Username taken.'));
 
 body.onload = () =>
 {
     document.getElementById('email').focus();
 }
 
-//Responds to backend validation which responds w a query if failed
-const url = new URL(window.location.href);
-const searchParams = new URLSearchParams(url.search);
-const text = searchParams.has('error');
-
-if (text)
+const signUpFetch = async (e) =>
 {
-    backError.innerText = 'An error has occurred during sign up.';
-    formInputs[0].node.addEventListener('input', () => backError.innerText = null);
-} if (searchParams.has('email'))
-{
-    invalidateMsg(formInputs[0], 0, 'Email already in use.');
-} if (searchParams.has('username'))
-{
-    invalidateMsg(formInputs[1], 0, 'Username already taken.');
+    e.preventDefault();
+    if (!canBeEnabled) return;
+    let credentials = {};
+    formInputs.forEach((val) =>
+    {
+        const name = val.node.getAttribute('id');
+        credentials[name] = val.value;
+    });
+    await fetch('/api/signup/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(credentials)
+    }).then(async res =>
+    {
+        const resJson = await res.json();
+        if (res.status == 201)
+        {
+            location.href = '/p/dashboard';
+        }
+        else if (resJson.success == false)
+        {
+            resJson.issues.forEach(val =>
+            {
+                invalidateMsg(formInputs[val.id], 0, val.msg)
+            })
+        } else console.log(resJson.status)
+    }).catch(err => console.log(err))
 }
+button.onclick = signUpFetch;

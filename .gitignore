@@ -1,0 +1,17 @@
+# NodeJS specific #
+./nyc_output/
+coverage/
+/node_modules/
+npm-debug.log
+package-locl.json
+test/*.log
+.env
+
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+.history/
