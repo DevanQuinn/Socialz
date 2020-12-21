@@ -35,7 +35,8 @@ router.get('/image/', (req, res) =>
     const files = fs.readdirSync('./public/src/social-media');
     const filesArr = files.filter(e => e.split('.')[1] == 'png');
     const imagePath = path.resolve('public', 'src', 'social-media');
-    res.status(200).send({ images: filesArr, path: imagePath });
+    // res.status(200).send({ images: filesArr, path: imagePath });
+    res.status(200).send(path.join('public', 'src', 'social-media', 'instagram_final.png'))
 })
 
 module.exports = router;

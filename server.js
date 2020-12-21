@@ -35,7 +35,7 @@ app.get('/',  (req, res) =>
 })
 
 
-app.use('/', require('./routes/profile-fetch'));
+app.use('/', require('./routes/profile-fetch').router);
 
 app.use('/p/', require('./routes/page'));
 

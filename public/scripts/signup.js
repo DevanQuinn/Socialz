@@ -1,6 +1,6 @@
 fetch('/cookies/api').then(res =>
 {
-    if (res.status == 200) location.href = '/p/dashboard';
+    if (res.status == 200) location.replace('/p/dashboard');
 }).catch()
 
 const body = document.querySelector('body');
@@ -55,8 +55,12 @@ let validArr = [false, false, false, false];
 //Used for displaying error messages under specific form input fields
 const invalidateMsg = (element, index = 0, msg = 'An error has occurred.') =>
 {
-    const errorId = index == -1 ? 'backend-error': element.node.getAttribute('id') + String(index);
-    element.errorNode.innerText = null;
+    let errorId;
+    if (element)
+    {
+        errorId = element.node.getAttribute('id') + String(index);
+        element.errorNode.innerText = null;
+    } else errorId = 'backend-error';
     let errorNode = document.getElementById(errorId);
     if (!errorNode)
     {
@@ -69,7 +73,7 @@ const invalidateMsg = (element, index = 0, msg = 'An error has occurred.') =>
     errorNode.innerText = msg;
     errorNode.style.color = 'red';
     validArr[formInputs.indexOf(element)] = false;
-    element.node.addEventListener('input', () => errorNode.remove());
+    if (element) element.node.addEventListener('input', () => errorNode.remove());
 }
 
 // Checks for errors in the corresponding input object; if there is one, a message will be added containing the specified error. 
@@ -131,7 +135,14 @@ const isValidArr = () =>
 
 const backError = document.getElementById('backend-error');
 
-let canBeEnabled;
+let cannotBeEnabled = true;
+
+const changeButtonStatus = (condition, callback = null) =>
+{
+    cannotBeEnabled = callback || condition;
+    button.disabled = cannotBeEnabled;
+}
+
 // Checks for errors and enables button accordingly based on each key typed
 formInputs.forEach((element, index) =>
 {
@@ -141,14 +152,15 @@ formInputs.forEach((element, index) =>
         //if (backError) backError.innerText = null;
         element.value = element.node.value;
         validArr[index] = checkError(element, element.dependency);
-        canBeEnabled = ((errors.length == 0) && isValidArr());
-        button.disabled = !canBeEnabled
+        // cannotBeEnabled = !((errors.length == 0) && isValidArr());
+        // button.disabled = cannotBeEnabled;
+        changeButtonStatus(!((errors.length == 0) && isValidArr()));
     })
 })
 
 const dynamicFetch = async (obj, index, msg) => 
 {
-    button.disabled = true;
+    changeButtonStatus(true);
     const prevVal = obj.email || obj.username;
     await fetch('/api/signup/submit/usercheck', {
         method: 'POST',
@@ -163,7 +175,6 @@ const dynamicFetch = async (obj, index, msg) =>
         {
             invalidateMsg(formInputs[index], 0, msg)
         }
-        else button.disabled = !canBeEnabled;
     }).catch(err => console.log(err));
 }
 
@@ -179,7 +190,8 @@ body.onload = () =>
 const signUpFetch = async (e) =>
 {
     e.preventDefault();
-    if (!canBeEnabled) return;
+    button.disabled = true;
+    if (cannotBeEnabled) return;
     let credentials = {};
     formInputs.forEach((val) =>
     {
@@ -201,8 +213,10 @@ const signUpFetch = async (e) =>
         }
         else if (resJson.success == false)
         {
+            button.disabled = cannotBeEnabled;
             resJson.issues.forEach(val =>
             {
+                console.log(val);
                 invalidateMsg(formInputs[val.id], 0, val.msg)
             })
         } else console.log(resJson.status)

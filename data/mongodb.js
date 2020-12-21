@@ -13,8 +13,8 @@ mongoose.connect(uri, {
 
 const accountSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    email: String,
-    username: [String],
+    email: { type: String, unique: true },
+    username: { type: [String], unique: true },
     password: String,
     creationDate: { type: Date, default: Date.now }
 });

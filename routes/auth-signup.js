@@ -6,6 +6,7 @@ const { Account, Profile } = require('../data/mongodb');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const reservedKeywords = require('./profile-fetch').reservedKeywords;
 
 const notFound = (res) => res.sendFile(path.resolve(__dirname, '..', 'public', 'pages', '_hidden', 'notfound.html'));
 
@@ -18,7 +19,7 @@ router.post('/', async (req, res) =>
     let { email, username, password1, password2 } = req.body;
 
     let issues = [];
-
+    
     await Account.findOne({ $or: [{ email }, { username: username.toLowerCase() }] })
         .select('email username').lean().exec()
         .then((doc) =>
@@ -71,12 +72,12 @@ router.post('/', async (req, res) =>
                             {
                                 res.cookie('token', token,
                                     { httpOnly: true, sameSite: 'strict' });
-                                res.sendStatus(201);
+                                res.status(201).send({ success: true });
                             })
                             .catch(err => console.log(err));
                     });
                 })
-                .catch(err => res.json({ success: false, issues: [{ id: -1, msg: err }] }));
+                .catch(err => res.json({ success: false, issues: [{ id: -1, msg: "An error has occurred." }] }));
             
         })
     }
@@ -88,7 +89,7 @@ let userCheckTimeout;
 router.post('/usercheck', (req, res) =>
 {
     clearTimeout(userCheckTimeout);
-    if (userCheckCache.includes(req.body.email || req.body.username))
+    if (userCheckCache.includes(req.body.email || req.body.username) || reservedKeywords.includes(req.body.username))
     {
         res.send(true);
         return;

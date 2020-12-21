@@ -23,29 +23,75 @@ const showImageCard = async () =>
     const cardClose = document.getElementById('card-close');
     backgroundCard.style.visibility = 'visible';
     cardClose.addEventListener('click', () => backgroundCard.style.visibility = 'hidden');
-    if (!socialImages.loaded)
-    {
-        await fetch('/dashboard/api/image').then(async res =>
-        {
-            const resJson = await res.json();
-            socialImages.images = resJson.images;
-            socialImages.path = resJson.path;
-            socialImages.loaded = true;
-        })
-        socialImages.images.forEach(e =>
-        {
-            const image = document.createElement('img');
+    // if (!socialImages.loaded)
+    // {
+    //     await fetch('/dashboard/api/image').then(async res =>
+    //     {
+    //         const resJson = await res.json();
+    //         socialImages.images = resJson.images;
+    //         socialImages.path = resJson.path;
+    //         socialImages.loaded = true;
+    //     })
+    //     // socialImages.images.forEach(e =>
+    //     // {
+    //     //     const image = document.createElement('img');
             
-            imageCard.appendChild(image);
-        })
-    }
+    //     //     imageCard.appendChild(image);
+    //     // })
+    // }
+    await fetch('/dashboard/api/image').then(res => res.blob()).then(image =>
+    {
+        const imageNode = document.createElement('img');
+        imageCard.appendChild(imageNode);
+        imageNode.setAttribute('src', URL.createObjectURL(image));
+    })
 }
 
 
-const addSocialForm = (index = 0) =>
+const addSocialForm = (index = 1) =>
 {
-    const form = document.createElement('form');
-    socialContainer.appendChild(form);
+    const formContainer = document.createElement('form');
+    formContainer.setAttribute('id', 'form' + index.toString());
+    const form = document.createElement('div');
+    formContainer.appendChild(form);
+    form.setAttribute('id', 'div' + index.toString());
+    socialContainer.appendChild(formContainer);
+    
+    const order = document.createElement('input');
+    let orderIndex = index;
+    order.setAttribute('type', 'number');
+    order.setAttribute('id', 'order' + index.toString())
+    order.setAttribute('value', index);
+    order.setAttribute('step', '0');
+    order.addEventListener('input', e =>
+    {
+        const orderValue = e.target.value >= orderIndex ? orderIndex - 1 : orderIndex + 1;
+        const formThis = document.getElementById('form' + orderIndex.toString());
+        const orderAlt = document.getElementById('order' + orderValue.toString());
+        const formAlt = document.getElementById('form' + orderValue.toString());
+        const divAlt = document.getElementById('div' + orderValue.toString());
+
+        const div = document.getElementById('div' + orderIndex);
+            console.log('dijaw')
+        if (orderAlt)
+        {
+            formThis.removeChild(div);
+            formAlt.removeChild(divAlt);
+            formAlt.appendChild(div);
+            formThis.appendChild(divAlt);
+
+            div.setAttribute('id', 'div' + (orderValue).toString());
+            divAlt.setAttribute('id', 'div' + orderIndex.toString())
+
+
+            orderAlt.setAttribute('value', orderIndex);
+            orderAlt.setAttribute('id', 'order' + orderIndex.toString());
+        }
+        
+        orderIndex = orderValue;
+        e.target.id = 'order' + (orderIndex).toString();
+        e.target.value = orderIndex;
+    });
 
     const formName = document.createElement('input');
     formName.setAttribute('class', 'social-name');
@@ -71,6 +117,7 @@ const addSocialForm = (index = 0) =>
     formButton.setAttribute('class', 'social-submit');
     formButton.innerText = 'Save';
 
+    form.appendChild(order);
     form.appendChild(formNameLabel);
     form.appendChild(formName);
     form.appendChild(formLinkLabel);
@@ -100,7 +147,7 @@ const fetchSocials = async () =>
     {
         if (res.status != 200)
         {
-            location.href = '/p/login'
+            location.replace('/p/login');
             return;
         }
         res.json().then(resJson =>
@@ -111,16 +158,16 @@ const fetchSocials = async () =>
             user.bio.value = profile.bio;
             user.profiles = profile.socials;
             refreshProfiles();
-        }).catch((err) => location.href = '/p/login');
-    }).catch(err => location.href = '/p/login');
+        }).catch((err) => location.replace('/p/login'));
+    }).catch(err => location.replace('/p/login'));
 }
 fetchSocials();
 
 addProfileButton.addEventListener('click', () =>
 {
     user.profiles.push({});
-    const index = user.profiles.length - 1;
-    addSocialForm();
+    const index = user.profiles.length;
+    addSocialForm(index);
     //refreshProfiles();
 })
 generalSubmitButton.addEventListener('click', (e) =>
