@@ -47,55 +47,84 @@ const showImageCard = async () =>
     })
 }
 
-
-const addSocialForm = (index = 1) =>
+//TODO: submit form update to database
+const updateSocials = () =>
 {
+    const socialsToSubmit = {
+        id: user.id,
+        socials: user.socials
+    }
+    fetch('/dashboard/api/update', {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(socialsToSubmit)
+    }).then(res => console.log(res.status)).catch(res => console.log(err))
+};
+const socialsSubmit = document.getElementById('socials-submit');
+socialsSubmit.onclick = () => updateSocials();
+
+//Adds a form with appropriate input fields and order functionality
+const addSocialForm = (index = 1, nameText = '', linkText = '') =>
+{
+    //Container to deal with order of forms
     const formContainer = document.createElement('form');
     formContainer.setAttribute('id', 'form' + index.toString());
+    //Used to outline the current positioning
     const form = document.createElement('div');
-    formContainer.appendChild(form);
     form.setAttribute('id', 'div' + index.toString());
     socialContainer.appendChild(formContainer);
     
-    const order = document.createElement('input');
+    const indexView = document.createElement('p');
+    indexView.innerText = index;
+    formContainer.appendChild(indexView);
+    formContainer.appendChild(form);
+
+    const orderContainer = document.createElement('div');
+    const orderUp = document.createElement('button');
+    orderUp.setAttribute('class', 'up');
+    orderUp.innerText = 'up';
+    const orderDown = document.createElement('button');
+    orderDown.setAttribute('class', 'down');
+    orderDown.innerText = 'down';
+    
+    form.appendChild(orderContainer);
+    orderContainer.appendChild(orderUp);
+    orderContainer.appendChild(orderDown);
+
     let orderIndex = index;
-    order.setAttribute('type', 'number');
-    order.setAttribute('id', 'order' + index.toString())
-    order.setAttribute('value', index);
-    order.setAttribute('step', '0');
-    order.addEventListener('input', e =>
+    const changeOrder = e =>
     {
-        const orderValue = e.target.value >= orderIndex ? orderIndex - 1 : orderIndex + 1;
+        e.preventDefault();
+        const orderValue = e.target.className == 'up' ? orderIndex - 1 : orderIndex + 1;
         const formThis = document.getElementById('form' + orderIndex.toString());
-        const orderAlt = document.getElementById('order' + orderValue.toString());
+        const divThis = document.getElementById('div' + orderIndex.toString());
+
         const formAlt = document.getElementById('form' + orderValue.toString());
         const divAlt = document.getElementById('div' + orderValue.toString());
-
-        const div = document.getElementById('div' + orderIndex);
-            console.log('dijaw')
-        if (orderAlt)
+        if (divAlt)
         {
-            formThis.removeChild(div);
+            formThis.removeChild(divThis);
             formAlt.removeChild(divAlt);
-            formAlt.appendChild(div);
+            formAlt.appendChild(divThis);
             formThis.appendChild(divAlt);
 
-            div.setAttribute('id', 'div' + (orderValue).toString());
-            divAlt.setAttribute('id', 'div' + orderIndex.toString())
+            divThis.setAttribute('id', 'div' + orderValue.toString());
+            divAlt.setAttribute('id', 'div' + orderIndex.toString());
 
 
-            orderAlt.setAttribute('value', orderIndex);
-            orderAlt.setAttribute('id', 'order' + orderIndex.toString());
+            orderIndex = orderValue;
         }
         
-        orderIndex = orderValue;
-        e.target.id = 'order' + (orderIndex).toString();
-        e.target.value = orderIndex;
-    });
+    };
+    orderUp.addEventListener('click', changeOrder);
+    orderDown.addEventListener('click', changeOrder);
 
     const formName = document.createElement('input');
     formName.setAttribute('class', 'social-name');
     formName.setAttribute('name', 'name');
+    formName.setAttribute('value', nameText);
     const formNameLabel = document.createElement('label');
     formNameLabel.setAttribute('for', 'name');
     formNameLabel.innerText = 'Name';
@@ -103,6 +132,7 @@ const addSocialForm = (index = 1) =>
     const formLink = document.createElement('input');
     formLink.setAttribute('class', 'social-link');
     formLink.setAttribute('name', 'link');
+    formLink.setAttribute('value', linkText);
     const formLinkLabel = document.createElement('label');
     formLinkLabel.setAttribute('for', 'link');
     formLinkLabel.innerText = 'Link';
@@ -113,34 +143,37 @@ const addSocialForm = (index = 1) =>
     formImg.setAttribute('type', 'button');
     formImg.addEventListener('click', showImageCard);
 
-    const formButton = document.createElement('button');
-    formButton.setAttribute('class', 'social-submit');
-    formButton.innerText = 'Save';
+    const saveBtn = document.createElement('button');
+    saveBtn.innerText = 'Save';
+    const saveSocial = e =>
+    {
+        e.preventDefault();
+        e.target.innerText = 'Edit';
+        user.socials[index - 1].name = formName.value;
+        user.socials[index - 1].link = formLink.value;
+        // TODO: disable and reenable buttons
+    };
+    saveBtn.onclick = saveSocial;
 
-    form.appendChild(order);
+    form.appendChild(orderContainer);
     form.appendChild(formNameLabel);
     form.appendChild(formName);
     form.appendChild(formLinkLabel);
     form.appendChild(formLink);
     form.appendChild(formImg);
-    form.appendChild(formButton);
+    form.appendChild(saveBtn);
 }
 
 const refreshProfiles = () =>
 {
-    Array.from(socialContainer.children).forEach(element => element.remove())
-    console.log(user.profiles)
-    user.profiles.forEach(element =>
+    //Array.from(socialContainer.children).forEach(element => element.remove())
+    user.socials.forEach((e, i) =>
     {
-        const profileCard = document.createElement('div');
-        profileCard.style.background = 'black';
-        profileCard.style.height = '50px';
-        profileCard.style.width = '50px';
-        profileCard.style.margin = '10px';
-        socialContainer.appendChild(profileCard);
+        addSocialForm(i + 1, e.name, e.link);
     })
 }
 
+//Fetch user info on page load
 const fetchSocials = async () =>
 {
     await fetch('/dashboard/api').then(res =>
@@ -153,10 +186,11 @@ const fetchSocials = async () =>
         res.json().then(resJson =>
         {
             const profile = resJson.profile;
+            user.id = profile._id;
             user.displayName.value = profile.displayName;
             user.location.value = profile.location;
             user.bio.value = profile.bio;
-            user.profiles = profile.socials;
+            user.socials = profile.socials;
             refreshProfiles();
         }).catch((err) => location.replace('/p/login'));
     }).catch(err => location.replace('/p/login'));
@@ -165,8 +199,8 @@ fetchSocials();
 
 addProfileButton.addEventListener('click', () =>
 {
-    user.profiles.push({});
-    const index = user.profiles.length;
+    user.socials.push({});
+    const index = user.socials.length;
     addSocialForm(index);
     //refreshProfiles();
 })
