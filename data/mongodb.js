@@ -26,8 +26,7 @@ const socialSchema = new mongoose.Schema({
     img: {
         data: Buffer,
         contentType: String,
-    },
-    orderIndex: Number
+    }
 });
 const SubSocial = mongoose.model('socials', socialSchema);
 const profileSchema = new mongoose.Schema({

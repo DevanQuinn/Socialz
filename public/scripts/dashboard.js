@@ -112,7 +112,9 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
 
             divThis.setAttribute('id', 'div' + orderValue.toString());
             divAlt.setAttribute('id', 'div' + orderIndex.toString());
-
+            const tempSocial = user.socials[orderIndex - 1];
+            user.socials[orderIndex - 1] = user.socials[orderValue - 1];
+            user.socials[orderValue - 1] = tempSocial;
 
             orderIndex = orderValue;
         }
@@ -125,6 +127,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     formName.setAttribute('class', 'social-name');
     formName.setAttribute('name', 'name');
     formName.setAttribute('value', nameText);
+    formName.disabled = true;
     const formNameLabel = document.createElement('label');
     formNameLabel.setAttribute('for', 'name');
     formNameLabel.innerText = 'Name';
@@ -133,6 +136,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     formLink.setAttribute('class', 'social-link');
     formLink.setAttribute('name', 'link');
     formLink.setAttribute('value', linkText);
+    formLink.disabled = true;
     const formLinkLabel = document.createElement('label');
     formLinkLabel.setAttribute('for', 'link');
     formLinkLabel.innerText = 'Link';
@@ -144,16 +148,26 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     formImg.addEventListener('click', showImageCard);
 
     const saveBtn = document.createElement('button');
-    saveBtn.innerText = 'Save';
+    saveBtn.innerText = 'Edit';
+    const editSocial = e =>
+    {
+        e.preventDefault();
+        e.target.innerText = 'Save';
+        formName.disabled = false;
+        formLink.disabled = false;
+        e.target.onclick = saveSocial;
+    }
     const saveSocial = e =>
     {
         e.preventDefault();
         e.target.innerText = 'Edit';
         user.socials[index - 1].name = formName.value;
         user.socials[index - 1].link = formLink.value;
-        // TODO: disable and reenable buttons
+        formName.disabled = true;
+        formLink.disabled = true;
+        e.target.onclick = editSocial;
     };
-    saveBtn.onclick = saveSocial;
+    saveBtn.onclick = editSocial;
 
     form.appendChild(orderContainer);
     form.appendChild(formNameLabel);
@@ -166,7 +180,6 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
 
 const refreshProfiles = () =>
 {
-    //Array.from(socialContainer.children).forEach(element => element.remove())
     user.socials.forEach((e, i) =>
     {
         addSocialForm(i + 1, e.name, e.link);
@@ -195,14 +208,28 @@ const fetchSocials = async () =>
         }).catch((err) => location.replace('/p/login'));
     }).catch(err => location.replace('/p/login'));
 }
-fetchSocials();
+document.querySelector('body').onload = async () =>
+{
+    fetchSocials();
+    fetch('/dashboard/api/username').then(res =>
+    {
+        res.json().then(resJson =>
+        {
+            const username = resJson.username;
+            const userLink = document.getElementById('user-link');
+            userLink.setAttribute('href', '/' + username);
+        })
+    })
+}
 
 addProfileButton.addEventListener('click', () =>
 {
-    user.socials.push({});
+    user.socials.push({
+        name: '',
+        link: '',
+    });
     const index = user.socials.length;
     addSocialForm(index);
-    //refreshProfiles();
 })
 generalSubmitButton.addEventListener('click', (e) =>
 {
