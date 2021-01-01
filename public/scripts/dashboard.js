@@ -308,7 +308,7 @@ document.querySelector('body').onload = async () =>
         {
             const username = resJson.username;
             const userLink = document.getElementById('user-link');
-            const portName = location.port ? ':' + location.port : null;
+            const portName = location.port ? ':' + location.port : '';
             const profileUrl = location.protocol + location.hostname + portName + '/' + username;
             const userButton = document.getElementById('user-button');
             const userCopy = document.getElementById('user-copy');
