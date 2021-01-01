@@ -1,0 +1,147 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap');
+
+:root {
+    --background:  rgba(24, 24, 24, 1);
+}
+
+body {
+    text-align: center;
+    font-family: "Montserrat", sans-serif;
+    background: rgb(244,104,246);
+    background: linear-gradient(90deg, rgba(244,104,246,1) 0%, rgba(255,56,107,1) 100%);
+    color: white;
+    font-size: 18px;
+    overflow-x: hidden;
+}
+
+.heading {
+    color: darkslategrey;
+    font-weight: bold;
+}
+
+#general-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+#image-card {
+    background: white; 
+    position: absolute; 
+    height: 70vh;
+    width: 50vw;
+    top: 75px;
+    right: 400px;
+    opacity: 1;
+}
+
+#background-card {
+    visibility: hidden; 
+    position: absolute; 
+    background: rgba(0, 0, 0, 0.5); 
+    height: 100%; 
+    width: 100%; 
+    top: 0px; 
+    left: 0"
+}
+
+.form-div {
+    background-color: royalblue;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    margin: 0 auto;
+    padding: 5px;
+    position: relative;
+}
+
+input {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    height: 5%;
+    background: none;
+    outline: 1px solid white;
+    border: none;
+    color: white;
+    text-overflow: ellipsis;
+    padding: 5px;
+}
+
+input:focus {
+    outline: 3px solid grey;
+}
+
+input:disabled {
+    outline: none;
+}
+
+.social-link,
+.social-name {
+    margin: 0 3%;
+    width: 20%;
+    padding: 0;
+}
+
+.social-link {
+    width: 50%;
+    margin-right: 100px;
+}
+
+
+button {
+    font-family: 'Montserrat', sans-serif;
+    width: 10%;
+    height: 5%;
+    border-radius: 5%;
+    outline: none;
+    border: none;
+    margin: 10px;
+    opacity: 1;
+    transition: all 0.2s ease;
+    font-size: 14px;
+}
+
+button:hover {
+    cursor: pointer;
+    background: rgb(206, 206, 206);
+}
+
+button:hover:disabled {
+    cursor: default;
+    transform: none;
+    opacity: 1;
+    font-size: 14px;
+}
+
+.save-button {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    margin-left: 50px;
+    position: absolute;
+    right: 0;
+    border-radius: 0;
+}
+
+.delete-button {
+    visibility: hidden;
+    position: absolute;
+    border-radius: 0;
+    height: 100%;
+    width: 50px;
+    background: red;
+    font-size: 24px;
+    text-align: center;
+    padding: 5px;
+    border: none;
+    transition: none;
+    left: -10px;
+}
+
+.delete-button:hover {
+    opacity: 1;
+    background: rgb(219, 2, 2);
+}
