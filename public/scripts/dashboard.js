@@ -74,6 +74,16 @@ const updateSocials = () =>
 const socialsSubmit = document.getElementById('socials-submit');
 socialsSubmit.onclick = () => updateSocials();
 
+const switchOrder = (index1, index2) =>
+{
+    const temp = user.socials[index1];
+    user.socials[index1] = user.socials[index2];
+    user.socials[index2] = temp;
+    console.log(user.socials)
+    return true;
+}
+
+let activeElement;
 //Adds a form with appropriate input fields and order functionality
 const addSocialForm = (index = 1, nameText = '', linkText = '') =>
 {
@@ -85,6 +95,8 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     const form = document.createElement('div');
     form.setAttribute('id', 'div' + index);
     form.className = 'form-div';
+    formContainer.style.order = index;
+
     socialContainer.appendChild(formContainer);
     
     const indexView = document.createElement('p');
@@ -92,20 +104,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     indexView.setAttribute('id', 'index' + index);
     // formContainer.appendChild(indexView);
     formContainer.appendChild(form);
-
-    const orderContainer = document.createElement('div');
-    orderContainer.setAttribute('id', 'order ' + index);
-    const orderUp = document.createElement('button');
-    orderUp.setAttribute('class', 'up');
-    orderUp.innerText = 'up';
-    const orderDown = document.createElement('button');
-    orderDown.setAttribute('class', 'down');
-    orderDown.innerText = 'down';
     
-    // form.appendChild(orderContainer);
-    orderContainer.appendChild(orderUp);
-    orderContainer.appendChild(orderDown);
-
     let orderIndex = index;
     form.addEventListener('index-increase', () =>
     {
@@ -120,36 +119,36 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
         console.log(formContainer.id)
     });
 
-    const changeOrder = e =>
+    //Handle to drag
+    const dragger = document.createElement('p');
+    dragger.className = 'draggable';
+    dragger.addEventListener('mousedown', () => form.setAttribute('draggable', true))
+    dragger.addEventListener('mouseup', () => form.setAttribute('draggable', false))
+    form.ondragstart = (e) =>
     {
-        e.preventDefault();
-        const orderValue = e.target.className == 'up' ? orderIndex - 1 : orderIndex + 1;
-        const formThis = document.getElementById('form' + orderIndex);
-        const divThis = document.getElementById('div' + orderIndex);
+        activeElement = formContainer;
+        e.dataTransfer.setDragImage(form, 0, 0);
+        setTimeout(() => form.classList.add('hidden'), 0);
+        e.dataTransfer.effectAllowed = 'copyMove';
+    }
+    form.ondragend = () => form.classList.remove('hidden');
+    form.ondragenter = (e) =>
+    {
+        console.log('entered')
+    }
+    form.ondragover = (e) => e.preventDefault();
+    form.ondrop = (e) =>
+    {
+        e.stopPropagation();
+        if (activeElement == formContainer) return;
+        const tempOrder = activeElement.style.order;
+        switchOrder(tempOrder - 1, formContainer.style.order - 1)
+        activeElement.style.order = formContainer.style.order;
+        formContainer.style.order = tempOrder;
 
-        const formAlt = document.getElementById('form' + orderValue);
-        const divAlt = document.getElementById('div' + orderValue);
-        if (divAlt)
-        {
-            formThis.removeChild(divThis);
-            formAlt.removeChild(divAlt);
-            formAlt.appendChild(divThis);
-            formThis.appendChild(divAlt);
-
-            divThis.setAttribute('id', 'div' + orderValue);
-            divAlt.setAttribute('id', 'div' + orderIndex);
-            const tempSocial = user.socials[orderIndex - 1];
-            user.socials[orderIndex - 1] = user.socials[orderValue - 1];
-            user.socials[orderValue - 1] = tempSocial;
-
-            const indexChange = orderValue < orderIndex ? new Event('index-increase') : new Event('index-decrease')
-            orderIndex = orderValue;
-            divThis.dispatchEvent(indexChange);
-        }
-        
+        activeElement = null;
     };
-    orderUp.addEventListener('click', changeOrder);
-    orderDown.addEventListener('click', changeOrder);
+
 
     //Name input field
     const formName = document.createElement('input');
@@ -253,8 +252,9 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     saveBtn.onclick = editSocial;
     if (linkText == '') saveBtn.click();
 
-    //form.appendChild(orderContainer);
+    //Append all elements to the individual form
     // form.appendChild(formNameLabel);
+    form.appendChild(dragger);
     form.appendChild(deleteBtn);
     form.appendChild(formName);
     // form.appendChild(formLinkLabel);
@@ -296,7 +296,7 @@ const fetchSocials = async () =>
             user.bio.value = profile.bio;
             user.socials = profile.socials;
             refreshProfiles();
-        }).catch((err) => location.replace('/p/login'));
+        }).catch((err) => console.log(err));
     }).catch(err => console.log(err));
 }
 document.querySelector('body').onload = async () =>
@@ -309,7 +309,7 @@ document.querySelector('body').onload = async () =>
             const username = resJson.username;
             const userLink = document.getElementById('user-link');
             const portName = location.port ? ':' + location.port : '';
-            const profileUrl = location.protocol + location.hostname + portName + '/' + username;
+            const profileUrl = location.protocol + '//' + location.hostname + portName + '/' + username;
             const userButton = document.getElementById('user-button');
             const userCopy = document.getElementById('user-copy');
             userLink.value = profileUrl;
