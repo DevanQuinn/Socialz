@@ -1,4 +1,6 @@
 const user = {
+    avatarDisplay: document.getElementById('avatar-display'),
+    avatar: document.getElementById('avatar'),
     displayName: document.getElementById('display-name'),
     profilePicture: document.getElementById('profile-picture'),
     location: document.getElementById('location'),
@@ -6,17 +8,28 @@ const user = {
     profiles: []
 }
 
-const onReload = (e) => 
-        {
-            e.preventDefault();
-            e.returnValue = '';
-        };
+const handleReload = (e) => 
+{
+    e.preventDefault();
+    e.returnValue = '';
+};
 
 const generalForm = document.getElementById('general-info');
 const addProfileButton = document.getElementById('add-profile');
 const generalSubmitButton = document.getElementById('general-submit');
 const socialContainer = document.getElementById('socials');
+const publishBtn = document.getElementById('socials-submit');
 
+const enablePublish = () => 
+{
+    window.addEventListener('beforeunload', handleReload);
+    publishBtn.disabled = false;
+}
+const disablePublish = () =>
+{
+    window.removeEventListener('beforeunload', handleReload);
+    publishBtn.disabled = true;
+}
 let socialImages = {
     loaded: false,
     images: []
@@ -52,10 +65,9 @@ const showImageCard = async () =>
     })
 }
 
-//TODO: submit form update to database
+//Submit form update to database
 const updateSocials = () =>
 {
-    window.removeEventListener('beforeunload', onReload);
     const socialsToSubmit = {
         id: user.id,
         socials: user.socials
@@ -68,11 +80,10 @@ const updateSocials = () =>
         body: JSON.stringify(socialsToSubmit)
     }).then(res =>
     {
-        document.getElementById('socials-submit').disabled = true;
+        disablePublish();
     }).catch(res => console.log(err))
 };
-const socialsSubmit = document.getElementById('socials-submit');
-socialsSubmit.onclick = () => updateSocials();
+publishBtn.onclick = () => updateSocials();
 
 const switchOrder = (index1, index2) =>
 {
@@ -122,29 +133,41 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     //Handle to drag
     const dragger = document.createElement('p');
     dragger.className = 'draggable';
-    dragger.addEventListener('mousedown', () => form.setAttribute('draggable', true))
-    dragger.addEventListener('mouseup', () => form.setAttribute('draggable', false))
-    form.ondragstart = (e) =>
+    dragger.addEventListener('mousedown', () => formContainer.setAttribute('draggable', true))
+    dragger.addEventListener('mouseup', () => formContainer.setAttribute('draggable', false))
+    formContainer.ondragstart = (e) =>
     {
         activeElement = formContainer;
-        e.dataTransfer.setDragImage(form, 0, 0);
         setTimeout(() => form.classList.add('hidden'), 0);
         e.dataTransfer.effectAllowed = 'copyMove';
     }
-    form.ondragend = () => form.classList.remove('hidden');
+    formContainer.ondragend = (e) =>
+    {
+        form.classList.remove('hidden')
+        document.querySelectorAll('.form-div').forEach(el => el.style.backgroundColor = 'royalblue');
+    };
     form.ondragenter = (e) =>
     {
-        console.log('entered')
+        document.querySelectorAll('.form-div').forEach(el => el.style.backgroundColor = 'royalblue');
+        console.log(e.target)
+        form.style.backgroundColor = 'red';
     }
-    form.ondragover = (e) => e.preventDefault();
-    form.ondrop = (e) =>
+    form.ondragleave = (e) =>
+    {
+        const eClass = e.target.parentNode.className;
+        if (eClass == 'form-div' || eClass == 'form-container') return;
+    }
+    formContainer.ondragover = (e) => e.preventDefault();
+    formContainer.ondrop = (e) =>
     {
         e.stopPropagation();
+        // form.style.backgroundColor = 'royalblue';
         if (activeElement == formContainer) return;
         const tempOrder = activeElement.style.order;
         switchOrder(tempOrder - 1, formContainer.style.order - 1)
         activeElement.style.order = formContainer.style.order;
         formContainer.style.order = tempOrder;
+        enablePublish();
 
         activeElement = null;
     };
@@ -164,6 +187,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     const formLink = document.createElement('input');
     formLink.className = 'social-link';
     formLink.setAttribute('name', 'link');
+    formLink.setAttribute('type', 'url');
     formLink.setAttribute('value', linkText);
     formLink.disabled = true;
     const formLinkLabel = document.createElement('label');
@@ -179,11 +203,13 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
 
     //Save/Edit button
     const saveBtn = document.createElement('button');
+    saveBtn.type = 'submit';
     saveBtn.innerText = 'Edit';
     saveBtn.className = 'save-button';
 
     //Delete button
     const deleteBtn = document.createElement('button');
+    deleteBtn.setAttribute('tabindex', -1);
     deleteBtn.style.visibility = 'hidden';
     deleteBtn.innerText = '🗑️';
     deleteBtn.className = 'delete-button';
@@ -205,7 +231,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
         {
             document.getElementById('form' + (i + 1)).dispatchEvent(deleteEvent);
         }
-        document.getElementById('socials-submit').disabled = false;
+        publishBtn.disabled = false;
     })
 
     //Error text (under the form)
@@ -215,12 +241,13 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     const editSocial = e =>
     {
         e.preventDefault();
-        window.addEventListener('beforeunload', onReload);
+        disablePublish();
         e.target.innerText = 'Save';
         formName.disabled = false;
         formLink.disabled = false;
         e.target.onclick = saveSocial;
-        document.getElementById('socials-submit').disabled = true;
+        dragger.style.visibility = 'hidden';
+        dragger.style.pointerEvents = 'none';
         deleteBtn.style.visibility = 'visible';
         formName.focus();
         formName.select();
@@ -246,7 +273,9 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
         formName.disabled = true;
         formLink.disabled = true;
         e.target.onclick = editSocial;
-        document.getElementById('socials-submit').disabled = false;
+        enablePublish();
+        dragger.style.visibility = 'visible';
+        dragger.style.pointerEvents = 'all';
         deleteBtn.style.visibility = 'hidden';
     };
     saveBtn.onclick = editSocial;
@@ -295,6 +324,40 @@ const fetchSocials = async () =>
             user.location.value = profile.location;
             user.bio.value = profile.bio;
             user.socials = profile.socials;
+            //Set Preset Avatar Image
+            fetch(`/api/files/${profile.avatar}`)
+                .then(avatar => avatar.blob())
+                .then(blob =>
+                {
+                    const url = URL.createObjectURL(blob);
+                    user.avatarDisplay.src = url;
+                    user.avatarDisplay.addEventListener('click', () => user.avatar.click());
+                    user.avatar.addEventListener('change', (e) =>
+                    {
+                        // const canvas = document.createElement('canvas');
+                        // canvas.width = 125;
+                        // canvas.height = 125;
+                        // const ctx = canvas.getContext('2d');
+                        // const file = e.target.files[0];
+                        // const rawUrl = URL.createObjectURL(file);
+                        // const tempImg = new Image();
+                        // tempImg.src = rawUrl;
+                        // tempImg.onload = () =>
+                        // {
+                            
+                        //     ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
+                        //     // const optimizedUrl = canvas.toDataURL("image/jpeg", 0.7);
+                        //     canvas.toBlob(blob =>
+                        //     {
+                        //         const optimizedUrl = URL.createObjectURL(blob);
+                        //         user.avatarDisplay.src = optimizedUrl;
+                        //         console.log(user.avatar.value)
+                        //     }, 'image/jpeg', 0.7);
+                        //     // user.avatarDisplay.src = optimizedUrl;
+                        // }
+                        user.avatarDisplay.src = URL.createObjectURL(e.target.files[0]);
+                    })
+                })
             refreshProfiles();
         }).catch((err) => console.log(err));
     }).catch(err => console.log(err));
@@ -308,11 +371,14 @@ document.querySelector('body').onload = async () =>
         {
             const username = resJson.username;
             const userLink = document.getElementById('user-link');
+            
             const portName = location.port ? ':' + location.port : '';
             const profileUrl = location.protocol + '//' + location.hostname + portName + '/' + username;
             const userButton = document.getElementById('user-button');
             const userCopy = document.getElementById('user-copy');
             userLink.value = profileUrl;
+            userLink.style.width = profileUrl.length / 1.75 + 'em';
+            console.log(userLink.innerText)
             userButton.onclick = () => window.open(new URL(profileUrl), '_blank');
             userCopy.onclick = (e) =>
             {
@@ -344,8 +410,12 @@ addProfileButton.addEventListener('click', () =>
 generalSubmitButton.addEventListener('click', (e) =>
 {
     e.preventDefault();
-
+    const form = document.getElementById('general-info');
+    const formData = new FormData(form);
+    console.log(user.avatar.files)
+    // formData.set('avatar', user.avatarDisplay.src);
     const newVals = {
+        avatar: user.avatarDisplay,
         displayName: user.displayName.value,
         location: user.location.value,
         bio: user.bio.value
@@ -353,8 +423,8 @@ generalSubmitButton.addEventListener('click', (e) =>
     fetch('/dashboard/api', {
         method: 'PUT',
         headers: {
-            'Content-Type': 'application/json'
+            // 'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newVals)
+        body: formData//JSON.stringify(newVals)
     }).then(res => console.log(res)).catch(err => console.log(err))
 })

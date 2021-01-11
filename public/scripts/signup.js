@@ -1,8 +1,3 @@
-fetch('/cookies/api').then(res =>
-{
-    if (res.status == 200) location.replace('/p/dashboard');
-}).catch()
-
 const body = document.querySelector('body');
 const button = document.getElementsByClassName('form-submit')[0];
 //const form = document.getElementsByClassName('form')[0];
@@ -160,6 +155,7 @@ formInputs.forEach((element, index) =>
 
 const dynamicFetch = async (obj, index, msg) => 
 {
+    const canNow = cannotBeEnabled;
     changeButtonStatus(true);
     const prevVal = obj.email || obj.username;
     await fetch('/api/signup/submit/usercheck', {
@@ -175,6 +171,7 @@ const dynamicFetch = async (obj, index, msg) =>
         {
             invalidateMsg(formInputs[index], 0, msg)
         }
+        else changeButtonStatus(canNow);
     }).catch(err => console.log(err));
 }
 

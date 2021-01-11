@@ -25,6 +25,12 @@ body {
     align-items: center;
 }
 
+#avatar-display {
+    width: 125px;
+    height: 125px;
+    cursor: pointer;
+}
+
 
 #image-card {
     background: white; 
@@ -65,12 +71,11 @@ body {
 }
 
 
-
 .draggable {
     background-color: yellow;
-    width: 10px;
+    width: 15px;
     height: 100%;
-    cursor: move;
+    cursor: grab;
     margin-right: 5px;
     position: absolute;
     left: 0;

@@ -52,6 +52,7 @@ router.post('/', async (req, res) =>
                 displayName: username,
                 location: 'Earth',
                 bio: 'I just made a new profile!',
+                avatar: '5ffbe86d0d96dd37f882fcc8',
             });
 
             Account.create({

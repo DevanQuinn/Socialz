@@ -58,6 +58,19 @@
         </form>
         <a href="/"><img id='logo' src='../src/logo.png'/></a>
     </div>
-    <script src="../scripts/signup.js"></script>
+
+    <script>
+        fetch('/cookies/api').then(res =>
+        {
+            if (res.status == 200) location.replace('/p/dashboard');
+            else {
+                const script = document.createElement('script');
+                script.src="../scripts/signup.js";
+                const scriptRef = document.querySelector('script');
+                scriptRef.parentNode.insertBefore(script, scriptRef);
+            }
+        }).catch()
+    </script>
+    <!-- <script src="../scripts/signup.js"></script> -->
 </body>
 </html>

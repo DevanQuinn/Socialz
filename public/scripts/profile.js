@@ -9,12 +9,28 @@ const camelCase = (str) =>
     return str[0].toUpperCase() + lowercase;
 }
 
+const convertToBase64 = (buffer) =>
+{
+    const typed_array = new Uint8Array(buffer);
+    const string_char = typed_array.reduce((data, byte) => data + String.fromCharCode(byte));
+    const base64 = window.btoa(string_char);
+    return base64;
+}
+
 const fetchSocials = async () =>
 {
     // domain/:username
     username = window.location.href.split('/')[3];
     const response = await fetch('/api/' + username);
     const profile = await response.json();
+    const avatar = fetch(`/api/files/${profile.avatar}`)
+        .then(avatar => avatar.blob())
+        .then(avatarBlob => URL.createObjectURL(avatarBlob))
+        .then(avatarUrl =>
+        {
+            const avatarNode = document.getElementById('pfp');
+            avatarNode.src = avatarUrl;
+        })
     userData = {
         username: profile.username,
         displayName: profile.displayName,
@@ -26,15 +42,9 @@ const fetchSocials = async () =>
     document.querySelector('title').innerText = userData.displayName + ' | Cherrylink';
 
     //User Data
-    const pfp = document.getElementById('pfp');
     const profileName = document.getElementById('profile-name');
     const profileLocation = document.getElementById('profile-location');
     const profileBio = document.getElementById('profile-bio');
-
-    //TODO: Profile Picture (User Data)
-    // pfp.src = userData.pfp;
-    // const srcSplit = userData.pfp.split('/');
-    // pfp.alt = srcSplit[srcSplit.length];
 
     profileName.innerText = userData.displayName;
     if (userData.location) profileLocation.innerText = '📍 ' + userData.location;

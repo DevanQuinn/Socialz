@@ -5,18 +5,22 @@
     <title>My Dashboard</title>
     <link rel="stylesheet" href="../css/dashboard.css"/>
 </head>
+<header>
+    <a href="/" style="position: absolute; left: 1%;">Mylinked</a>
+</header>
 <body>
     <h1>Dashboard</h1>
     <input id="user-link" readonly="readonly" ></input>
     <button type="button" id="user-copy">Copy 📋</button>
     <button type="button" id="user-button">Open 🔗</button>
-    
-    <form id="general-info">
+    <form id="general-info" enctype="multipart/form-data">
         <h3 class="heading">About Yourself</h3>
-        <!-- <input id="profile-picture" name="profile-picture" class="filepond" type="file" accept="image/png, image/jpeg" /> -->
 
-        <label for="display-name">Display Name</label>
-        <input id="display-name" name="display-name" class="general-input"/>
+        <img id="avatar-display" name="avatar-upload" class="general-input" />
+        <input type="file" allow="image/*" name="avatar" id="avatar" class="general-input hidden"/>
+
+        <label for="displayName">Display Name</label>
+        <input id="display-name" name="displayName" class="general-input"/>
 
         <label for="location">Location</label>
         <input id="location" name="location" class="general-input"/>
@@ -34,8 +38,8 @@
     <h3 class="heading">Links</h3>
     <div id="socials">
     </div>
-    <script type="module" src="../scripts/dashboard.js"></script>
     <button id="add-profile">Add Link</button>
     <button id="socials-submit" disabled>Publish Changes</button>
+    <script src="../scripts/dashboard.js"></script>
 </body>
 </html>

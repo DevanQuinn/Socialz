@@ -1,9 +1,3 @@
-fetch('/cookies/api').then(res =>
-{
-    if (res.status == 200) location.replace('/p/dashboard');
-    else return;
-})
-
 const button = document.getElementsByClassName('form-submit')[0];
 let cannotBeEnabled = true;
 button.disabled = cannotBeEnabled;

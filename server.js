@@ -3,6 +3,7 @@ const app = express();
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
+const cors = require('cors')
 
 const PORT = process.env.PORT || 3000;
 
@@ -12,11 +13,13 @@ app.use(express.static('public'));
 app.use(express.static('src'));
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(cors());
 
 app.set('case sensitive routing', false);
 
 const validateToken = (req, res, next) =>
 {
+    res.header('Access-Control-Allow-Origin', '*')
     const token = req.cookies.token;
     jwt.verify(token, process.env.JWT_SECRET, (err, decoded) =>
     {

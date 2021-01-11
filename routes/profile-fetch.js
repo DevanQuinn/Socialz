@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const { Account, Profile } = require('../data/mongodb');
+const { Account, Profile, readFile } = require('../data/mongodb');
 
 
 const socials = {
@@ -43,5 +43,9 @@ router.get('/api/:username', (req, res) =>
     }).catch(err => res.status(500).send(err));
     
 })
+
+//@route get /api/files/:filename
+//@desc fetches file based on file name
+router.get('/api/files/:fileid', readFile)
 
 module.exports = { router, reservedKeywords };
