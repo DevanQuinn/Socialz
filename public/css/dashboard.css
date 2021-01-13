@@ -17,6 +17,12 @@ body {
 .heading {
     color: darkslategrey;
     font-weight: bold;
+    width: 75vw;
+    height: 1.5em;
+    text-align: center;
+    padding-top: 0.5%;
+    margin: 2% auto;
+    background-color: white;
 }
 
 #general-info {
@@ -189,14 +195,92 @@ button:hover:disabled {
 
 @media only screen and (max-width: 1024px) {
 
+
+    a {
+        visibility: hidden;
+    }
+
+    .heading {
+        padding-top: 2%;    
+        margin: 5% auto;
+        width: 100%;
+        background-color: rgb(72, 73, 73);
+        color: white;
+    }
+
+    #avatar-display:active {
+        border-radius: 100px;
+    }
+    #avatar-display:hover {
+        opacity: 1;
+    }
+
+    .general-input {
+        margin-bottom: 5%;
+    }
+
+    label {
+        margin-bottom: 5px;
+    }
+
     .form-container {
+        margin-bottom: 15%;
+    }
+
+    .form-div {
         width: 90%;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .form-div input {
+        margin-left: 5%;
+        width: 95%;
+        padding: 3%;
+        font-size: 1em;
+        margin-bottom: 5%;
+    }
+
+    .social-link {
+        margin-bottom: 10%;
+    }
+
+    .delete-button {
+        width: 100%;
+        bottom: -25%;
+        height: 20%;
+        left: -10px;
     }
 
     .save-button {
         position: absolute;
         width: 100%;
-        height: 30%;
+        height: 20%;
         bottom: 0;
+    }
+
+    .general-input,
+    #general-submit {
+        width: 75%;
+        height: 40px;
+        margin-bottom: 5%;
+    }
+
+    button {
+        width: 50vw;
+        height: 7%;
+        font-size: 1em;
+    }
+
+    #user-copy,
+    #user-button {
+        width: 30vw;
+    }
+
+    #socials-submit {
+        background-color: rgb(183, 219, 183);
+    }
+    #socials-submit:disabled {
+        background-color: rgb(206, 206, 206);
+        transition: none;
     }
 }
