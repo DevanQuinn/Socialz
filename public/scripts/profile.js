@@ -81,7 +81,9 @@ const generateSocials = async (e, i) =>
     textContainer.appendChild(text);
 
     const desc = document.createElement('p');
-    desc.innerHTML = e.link.split('/')[2];
+    const linkUrl = new URL(e.link);
+    const domain = linkUrl.hostname;
+    desc.innerHTML = domain;
     desc.className = 'social-desc';
     textContainer.appendChild(desc);
 }

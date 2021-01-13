@@ -149,7 +149,6 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     form.ondragenter = (e) =>
     {
         document.querySelectorAll('.form-div').forEach(el => el.style.backgroundColor = 'royalblue');
-        console.log(e.target)
         form.style.backgroundColor = 'red';
     }
     form.ondragleave = (e) =>
@@ -334,28 +333,28 @@ const fetchSocials = async () =>
                     user.avatarDisplay.addEventListener('click', () => user.avatar.click());
                     user.avatar.addEventListener('change', (e) =>
                     {
-                        // const canvas = document.createElement('canvas');
-                        // canvas.width = 125;
-                        // canvas.height = 125;
-                        // const ctx = canvas.getContext('2d');
-                        // const file = e.target.files[0];
-                        // const rawUrl = URL.createObjectURL(file);
-                        // const tempImg = new Image();
-                        // tempImg.src = rawUrl;
-                        // tempImg.onload = () =>
-                        // {
-                            
-                        //     ctx.drawImage(tempImg, 0, 0, canvas.width, canvas.height);
-                        //     // const optimizedUrl = canvas.toDataURL("image/jpeg", 0.7);
-                        //     canvas.toBlob(blob =>
-                        //     {
-                        //         const optimizedUrl = URL.createObjectURL(blob);
-                        //         user.avatarDisplay.src = optimizedUrl;
-                        //         console.log(user.avatar.value)
-                        //     }, 'image/jpeg', 0.7);
-                        //     // user.avatarDisplay.src = optimizedUrl;
-                        // }
-                        user.avatarDisplay.src = URL.createObjectURL(e.target.files[0]);
+                        disablePublish();
+                        const mimetype = e.target.files[0].type;
+                        if (mimetype.split('/')[0] !== 'image') return;
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 512;
+                        canvas.height = 512;
+                        const ctx = canvas.getContext('2d');
+                        const file = e.target.files[0];
+                        const rawUrl = URL.createObjectURL(file);
+                        const tempImg = new Image();
+                        tempImg.src = rawUrl;
+                        tempImg.onload = () =>
+                        {
+                            const size = tempImg.width <= tempImg.height ? tempImg.width : tempImg.height;
+                            ctx.drawImage(tempImg, 0, 0, size, size, 0, 0, canvas.width, canvas.height);
+                            canvas.toBlob(blob =>
+                            {
+                                user.imageToUpload = blob;
+                                const optimizedUrl = URL.createObjectURL(blob);
+                                user.avatarDisplay.src = optimizedUrl;
+                            }, 'image/jpeg', 1);
+                        }
                     })
                 })
             refreshProfiles();
@@ -412,7 +411,8 @@ generalSubmitButton.addEventListener('click', (e) =>
     e.preventDefault();
     const form = document.getElementById('general-info');
     const formData = new FormData(form);
-    console.log(user.avatar.files)
+    formData.delete('avatar');
+    if (user.imageToUpload) formData.append('avatar', user.imageToUpload, 'avatar.jpeg');
     // formData.set('avatar', user.avatarDisplay.src);
     const newVals = {
         avatar: user.avatarDisplay,
