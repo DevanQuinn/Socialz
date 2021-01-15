@@ -35,11 +35,12 @@ const fetchSocials = async () =>
         username: profile.username,
         displayName: profile.displayName,
         location: profile.location,
-        bio: profile.bio
+        bio: profile.bio,
+        color: profile.color
     }
     socials = profile.socials;
     profileHeader.innerHTML = userData.displayName;
-    document.querySelector('title').innerText = userData.displayName + ' | Cherrylink';
+    // document.querySelector('title').innerText = userData.displayName + ' | Cherrylink';
 
     //User Data
     const profileName = document.getElementById('profile-name');
@@ -47,8 +48,9 @@ const fetchSocials = async () =>
     const profileBio = document.getElementById('profile-bio');
 
     profileName.innerText = userData.displayName;
-    if (userData.location) profileLocation.innerText = '📍 ' + userData.location;
-    profileBio.innerText = '💬 ' + userData.bio;
+    if (userData.location != '') profileLocation.innerText = '📍 ' + userData.location;
+    if (userData.bio != '') profileBio.innerText = '💬 ' + userData.bio;
+    document.body.style.backgroundColor = userData.color;
 }
 
 const generateSocials = async (e, i) =>

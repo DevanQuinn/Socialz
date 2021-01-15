@@ -95,6 +95,7 @@ const profileSchema = new mongoose.Schema({
     bio: String,
     socials: [socialSchema],
     avatar: String,
+    color: String,
 });
 const Profile = conn.model('Profile', profileSchema, 'Profiles');
 

@@ -7,8 +7,6 @@
 body {
     text-align: center;
     font-family: "Montserrat", sans-serif;
-    background: rgb(244,104,246);
-    background: linear-gradient(90deg, rgba(244,104,246,1) 0%, rgba(255,56,107,1) 100%);
     color: white;
     font-size: 18px;
     overflow-x: hidden;
@@ -45,6 +43,12 @@ body {
 }
 #avatar-display:hover {
     opacity: 0.75;
+}
+
+#bg-color {
+    width: 15%; 
+    height: 30px; 
+    background-color: rgba(0, 0, 0, 0.1);
 }
 
 

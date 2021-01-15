@@ -8,8 +8,6 @@
 
 body {
     text-align: center;
-    background: rgb(244,104,246);
-    background: linear-gradient(90deg, rgba(244,104,246,1) 0%, rgba(255,56,107,1) 100%);
     background-size: 100%;
     color: black;
     font-family: "montserrat", sans-serif;

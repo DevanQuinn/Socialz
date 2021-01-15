@@ -7,12 +7,15 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const reservedKeywords = require('./profile-fetch').reservedKeywords;
+const { sendSignupEmail } = require('../data/nodemailer');
 
 const notFound = (res) => res.sendFile(path.resolve(__dirname, '..', 'public', 'pages', '_hidden', 'notfound.html'));
 
 router.use(express.json());
 router.use(cookieParser());
 
+//@route post /
+//@desc create account by making 2 mongoose models and hashing password
 router.post('/', async (req, res) =>
 {
 
@@ -53,6 +56,7 @@ router.post('/', async (req, res) =>
                 location: 'Earth',
                 bio: 'I just made a new profile!',
                 avatar: '5ffbe86d0d96dd37f882fcc8',
+                color: '#f468f6',
             });
 
             Account.create({
@@ -71,6 +75,8 @@ router.post('/', async (req, res) =>
                         else createdProfile.save()
                             .then(() =>
                             {
+                                //Send email through nodemailer
+                                sendSignupEmail(email, username).catch(console.error)
                                 res.cookie('token', token,
                                     { httpOnly: true, sameSite: 'strict' });
                                 res.status(201).send({ success: true });
@@ -85,6 +91,8 @@ router.post('/', async (req, res) =>
     
 })
 
+//@route post /usercheck
+//@desc FIXME: debounce checking of username to prevent excessive database queries, uses simple caching
 let userCheckCache = [];
 let userCheckTimeout;
 router.post('/usercheck', (req, res) =>

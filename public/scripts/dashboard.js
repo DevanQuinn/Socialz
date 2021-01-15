@@ -2,10 +2,27 @@ const user = {
     avatarDisplay: document.getElementById('avatar-display'),
     avatar: document.getElementById('avatar'),
     displayName: document.getElementById('display-name'),
-    profilePicture: document.getElementById('profile-picture'),
     location: document.getElementById('location'),
     bio: document.getElementById('bio'),
+    color: document.getElementById('bg-color'),
     profiles: []
+}
+
+const initColor = () =>
+{
+    let body = document.body;
+    body.style.backgroundColor = user.color.value;
+    let prevColor = user.color.value;
+    user.color.addEventListener('change', (e) =>
+    {
+        const val = e.target.value;
+        const regex = /^#(?:[0-9a-fA-F]{3}){1,2}$/;
+        const passed = regex.test(val);
+        if (!passed) { user.color.value = prevColor; return; }
+        if (val == prevColor) return;
+        body.style.backgroundColor = val;
+        prevColor = val;
+    })
 }
 
 const handleReload = (e) => 
@@ -92,6 +109,33 @@ const switchOrder = (index1, index2) =>
     user.socials[index2] = temp;
     console.log(user.socials)
     return true;
+}
+
+const optimizeImg = (e, blobProp, urlProp) =>
+{
+    disablePublish();
+    const mimetype = e.target.files[0].type;
+    if (mimetype.split('/')[0] !== 'image') return;
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    const file = e.target.files[0];
+    const rawUrl = URL.createObjectURL(file);
+    const tempImg = new Image();
+    tempImg.src = rawUrl;
+    tempImg.onload = () =>
+    {
+        const size = tempImg.width <= tempImg.height ? tempImg.width : tempImg.height;
+        ctx.drawImage(tempImg, 0, 0, size, size, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob(blob =>
+        {
+            user[blobProp] = blob;
+            const url = URL.createObjectURL(blob);
+            user[urlProp].src = url;
+        }, 'image/jpeg', 1);
+        
+    }
 }
 
 let activeElement;
@@ -194,11 +238,15 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     formLinkLabel.innerText = 'Link';
 
     //Set image button
+    const formImgInput = document.createElement('input');
+    formImgInput.type = 'file';
+    formImgInput.setAttribute('allow', 'image/*');
     const formImg = document.createElement('button');
-    formImg.setAttribute('class', 'social-img-button');
-    formImg.innerText = 'Set Image';
-    formImg.setAttribute('type', 'button');
-    formImg.addEventListener('click', showImageCard);
+    formImg.className = 'social-img-button';
+    formImg.type = 'button';
+    formImg.innerText = '🖼️';
+    formImg.addEventListener('click', (e) => formImgInput.click());
+
 
     //Save/Edit button
     const saveBtn = document.createElement('button');
@@ -214,9 +262,11 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     deleteBtn.className = 'delete-button';
     formContainer.addEventListener('delete', () =>
     {
+        //FIXME: fix wonky behavior when deleting after reordering
         orderIndex--;
-        formContainer.setAttribute('id', 'form' + orderIndex);
-        form.setAttribute('id', 'div' + orderIndex);
+        formContainer.style.order = orderIndex;
+        // formContainer.setAttribute('id', 'form' + orderIndex);
+        // form.setAttribute('id', 'div' + orderIndex);
         indexView.innerText = orderIndex;
         
     })
@@ -287,7 +337,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     form.appendChild(formName);
     // form.appendChild(formLinkLabel);
     form.appendChild(formLink);
-    // form.appendChild(formImg);
+    form.appendChild(formImg);
     form.appendChild(saveBtn);
     form.appendChild(errorText);
 }
@@ -322,7 +372,9 @@ const fetchSocials = async () =>
             user.displayName.value = profile.displayName;
             user.location.value = profile.location;
             user.bio.value = profile.bio;
+            user.color.value = profile.color;
             user.socials = profile.socials;
+            initColor();
             //Set Preset Avatar Image
             fetch(`/api/files/${profile.avatar}`)
                 .then(avatar => avatar.blob())
@@ -331,30 +383,9 @@ const fetchSocials = async () =>
                     const url = URL.createObjectURL(blob);
                     user.avatarDisplay.src = url;
                     user.avatarDisplay.addEventListener('click', () => user.avatar.click());
-                    user.avatar.addEventListener('change', (e) =>
+                    user.avatar.addEventListener('change', async (e) =>
                     {
-                        disablePublish();
-                        const mimetype = e.target.files[0].type;
-                        if (mimetype.split('/')[0] !== 'image') return;
-                        const canvas = document.createElement('canvas');
-                        canvas.width = 512;
-                        canvas.height = 512;
-                        const ctx = canvas.getContext('2d');
-                        const file = e.target.files[0];
-                        const rawUrl = URL.createObjectURL(file);
-                        const tempImg = new Image();
-                        tempImg.src = rawUrl;
-                        tempImg.onload = () =>
-                        {
-                            const size = tempImg.width <= tempImg.height ? tempImg.width : tempImg.height;
-                            ctx.drawImage(tempImg, 0, 0, size, size, 0, 0, canvas.width, canvas.height);
-                            canvas.toBlob(blob =>
-                            {
-                                user.imageToUpload = blob;
-                                const optimizedUrl = URL.createObjectURL(blob);
-                                user.avatarDisplay.src = optimizedUrl;
-                            }, 'image/jpeg', 1);
-                        }
+                        optimizeImg(e, 'imageToUpload', 'avatarDisplay');
                     })
                 })
             refreshProfiles();
@@ -413,13 +444,7 @@ generalSubmitButton.addEventListener('click', (e) =>
     const formData = new FormData(form);
     formData.delete('avatar');
     if (user.imageToUpload) formData.append('avatar', user.imageToUpload, 'avatar.jpeg');
-    // formData.set('avatar', user.avatarDisplay.src);
-    const newVals = {
-        avatar: user.avatarDisplay,
-        displayName: user.displayName.value,
-        location: user.location.value,
-        bio: user.bio.value
-    }
+
     fetch('/dashboard/api', {
         method: 'PUT',
         headers: {

@@ -10,6 +10,8 @@ const cookieParser = require('cookie-parser');
 router.use(express.json());
 router.use(cookieParser());
 
+//@route post /
+//@desc checks password with hashed if account w/ username exists, assigns jwt cookie if succeeds
 router.post('/', (req, res) =>
 {
     const { username, password } = req.body;

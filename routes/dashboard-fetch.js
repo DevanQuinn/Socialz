@@ -42,8 +42,8 @@ router.put('/', upload.single('avatar'), (req, res) =>
 {
     multer({ storage });
     const id = req.locals.user.id;
-    const { displayName, location, bio } = req.body;
-    const update = { displayName, location, bio };
+    const { displayName, location, bio, color } = req.body;
+    const update = { displayName, location, bio, color };
     //Set image if new one was uploaded; if not, keep old image
     if (req.file) update.avatar = req.file.id;
     Profile.findByIdAndUpdate(id, update).exec().then(doc =>
