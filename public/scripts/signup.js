@@ -179,11 +179,6 @@ const dynamicFetch = async (obj, index, msg) =>
 formInputs[0].node.addEventListener('input', () => dynamicFetch({ email: formInputs[0].value }, 0, 'Email already in use.'));
 formInputs[1].node.addEventListener('input', () => dynamicFetch({ username: formInputs[1].value }, 1, 'Username taken.'));
 
-body.onload = () =>
-{
-    document.getElementById('email').focus();
-}
-
 const signUpFetch = async (e) =>
 {
     e.preventDefault();

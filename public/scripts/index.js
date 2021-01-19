@@ -8,7 +8,7 @@ rightSideAccount.onclick = () => location.href = '/p/signup';
 
 const token = localStorage.getItem('token');
 
-fetch('/cookies/api/username').then(res =>
+fetch('/api/cookies/request/username').then(res =>
 {
     res.json().then( resJson =>
     {
@@ -22,7 +22,7 @@ fetch('/cookies/api/username').then(res =>
 
         leftSideAccount.addEventListener('click', () =>
         {
-            fetch('/cookies/api', { method: 'DELETE' })
+            fetch('/api/cookies/request', { method: 'DELETE' })
             location.reload();
         })
         rightSideAccount.addEventListener('click', () => location.href = '/p/dashboard')

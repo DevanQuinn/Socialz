@@ -46,8 +46,10 @@ app.use('/api/signup/submit/', require('./routes/auth-signup'));
 
 app.use('/api/login/submit/', require('./routes/auth-login'));
 
-app.use('/dashboard/api/', validateToken, require('./routes/dashboard-fetch'));
+app.use('/api/dashboard/request', validateToken, require('./routes/dashboard-fetch'));
 
-app.use('/cookies/api', validateToken, require('./routes/cookies'));
+app.use('/api/cookies/request', validateToken, require('./routes/cookies'));
+
+app.use('/', require('./routes/reset-fetch'));
 
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));

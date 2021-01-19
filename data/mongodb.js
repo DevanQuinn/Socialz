@@ -55,6 +55,7 @@ const readFile = (req, res) =>
 
 const storage = new GridFsStorage({
     url: uri,
+    options: { useUnifiedTopology: true },
     file: async (req, file) =>
     {
         if (!file) return null;
@@ -75,17 +76,15 @@ const accountSchema = new mongoose.Schema({
     email: { type: String, unique: true },
     username: { type: [String], unique: true },
     password: String,
-    creationDate: { type: Date, default: Date.now }
+    creationDate: { type: Date, default: Date.now },
+    passwordReset: String,
 });
 const Account = conn.model('Account', accountSchema, 'Accounts');
 
 const socialSchema = new mongoose.Schema({
     name: String,
     link: String,
-    img: {
-        data: Buffer,
-        contentType: String,
-    }
+    img: String,
 });
 const SubSocial = conn.model('socials', socialSchema);
 const profileSchema = new mongoose.Schema({

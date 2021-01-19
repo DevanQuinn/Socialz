@@ -5,15 +5,7 @@ const { Account, Profile, readFile } = require('../data/mongodb');
 const { JSDOM } = require('jsdom');
 
 
-const socials = {
-    devan: [{ name: 'Tiktok', link: 'https://tiktok.com/@devanthedank', image: '../../src/social-media/tiktok_final.png'},
-        { name: 'Twitter', link: 'https://twitter.com/devanqueue', image: '../../src/social-media/twitter_final.png' },
-        { name: 'Twitch', link: 'https://twitch.tv/devanqueue', image: '../../src/social-media/twitch_final.png' },
-    {name: 'Discord', link: 'https://discord.gg/qp8tBhM6Sg', image: '../../src/social-media/discord_final.png'}]
-};
-
-
-const reservedKeywords = ['p', 'api', 'dashboard', 'cookies'];
+const reservedKeywords = ['p', 'api'];
 
 const notFound = (res) => res.sendFile(path.resolve(__dirname, '..', 'public', 'pages', '_hidden', 'notfound.html'));
 

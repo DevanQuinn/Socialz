@@ -55,8 +55,3 @@ button.addEventListener('click', (e) =>
     if (cannotBeEnabled) return;
     credentialFetch();
 })
-
-document.querySelector('body').onload = () =>
-{
-    document.getElementById('username').focus();
-}

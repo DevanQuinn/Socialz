@@ -74,7 +74,7 @@ const showImageCard = async () =>
     //     //     imageCard.appendChild(image);
     //     // })
     // }
-    await fetch('/dashboard/api/image').then(res => res.blob()).then(image =>
+    await fetch('/api/dashboard/request/image').then(res => res.blob()).then(image =>
     {
         const imageNode = document.createElement('img');
         imageCard.appendChild(imageNode);
@@ -89,7 +89,7 @@ const updateSocials = () =>
         id: user.id,
         socials: user.socials
     }
-    fetch('/dashboard/api/update', {
+    fetch('/api/dashboard/request/update', {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json'
@@ -257,6 +257,7 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     //Delete button
     const deleteBtn = document.createElement('button');
     deleteBtn.setAttribute('tabindex', -1);
+    deleteBtn.type = 'button';
     deleteBtn.style.visibility = 'hidden';
     deleteBtn.innerText = '🗑️';
     deleteBtn.className = 'delete-button';
@@ -328,7 +329,11 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
         deleteBtn.style.visibility = 'hidden';
     };
     saveBtn.onclick = editSocial;
-    if (linkText == '') saveBtn.click();
+    if (linkText == '')
+    {
+        saveBtn.click();
+        setTimeout(() => formName.focus(), 0)
+    }
 
     //Append all elements to the individual form
     // form.appendChild(formNameLabel);
@@ -358,7 +363,7 @@ const refreshProfiles = () =>
 //Fetch user info on page load
 const fetchSocials = async () =>
 {
-    await fetch('/dashboard/api').then(res =>
+    await fetch('/api/dashboard/request').then(res =>
     {
         if (res.status != 200)
         {
@@ -395,7 +400,7 @@ const fetchSocials = async () =>
 document.querySelector('body').onload = async () =>
 {
     fetchSocials();
-    fetch('/dashboard/api/username').then(res =>
+    fetch('/api/dashboard/request/username').then(res =>
     {
         res.json().then(resJson =>
         {
@@ -403,7 +408,7 @@ document.querySelector('body').onload = async () =>
             const userLink = document.getElementById('user-link');
             
             const portName = location.port ? ':' + location.port : '';
-            const profileUrl = location.protocol + '//' + location.hostname + portName + '/' + username;
+            const profileUrl = location.origin + '/' + username;
             const userButton = document.getElementById('user-button');
             const userCopy = document.getElementById('user-copy');
             userLink.value = profileUrl;
@@ -445,7 +450,7 @@ generalSubmitButton.addEventListener('click', (e) =>
     formData.delete('avatar');
     if (user.imageToUpload) formData.append('avatar', user.imageToUpload, 'avatar.jpeg');
 
-    fetch('/dashboard/api', {
+    fetch('/api/dashboard/request', {
         method: 'PUT',
         headers: {
             // 'Content-Type': 'application/json'
