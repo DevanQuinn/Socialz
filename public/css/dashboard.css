@@ -9,7 +9,89 @@ body {
     font-family: "Montserrat", sans-serif;
     color: white;
     font-size: 18px;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
+}
+
+#card-container {
+    width: 100%;
+    height: 100%;
+    right: 0;
+    top: 0;
+    position: fixed;
+    margin: 0 auto;
+    transition: opacity 0.2 linear;
+    z-index: 5;
+}
+#background-card {
+    opacity: 0.5;
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    z-index: -1;
+}
+
+#image-card {
+    width: 50vw;
+    height: 75vh;
+    margin: 0 auto;
+    margin-top: 10vh;;
+    background-color: rgb(39, 39, 39);
+    transition: transform 0.3s ease;
+    position: relative;
+    max-height: 475px;
+}
+
+#card-submit, 
+#card-delete, 
+#card-form {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    margin: 0;
+    border-radius: 0;
+    color: white;
+}
+
+#card-submit {
+    bottom: -10;
+    height: 15%;
+    font-size: 1.5em;
+    background-color: rgb(1, 209, 1);
+}
+
+#card-delete {
+    top: -10;
+}
+
+.shrink {
+    transform: scale(0);
+}
+.opacity {
+    transition: opacity 0.2 linear;
+    opacity: 0.1;
+    pointer-events: none;
+}
+
+
+#card-form {
+    bottom: 25%;
+    display: flex;
+    flex-direction: column;
+    align-items: space-between;
+    justify-content: center;
+    text-align: left;
+    left: 8.5%;
+}
+
+#card-form label {
+    margin-left: 1.5%;
+}
+
+#card-form input {
+    margin: 10px;
+    width: 80%;
 }
 
 .heading {
@@ -17,25 +99,56 @@ body {
     font-weight: bold;
     width: 75vw;
     height: 1.5em;
-    text-align: center;
     padding-top: 0.5%;
     margin: 2% auto;
     background-color: white;
 }
 
 #general-info {
+    margin: 0 auto;
     display: flex;
-    flex-direction: column;
+    flex-flow: row;
+    justify-content: center;
+    position: relative;
+    margin-top: -3%;
+    margin-bottom: 7%;
+}
+
+.general-inner {
+    margin-left: 5%;
+    display: flex;
+    flex-flow: column;
     align-items: center;
 }
 
+.general-inner input {
+    margin-bottom: 3%;
+    margin-top: 1%;
+    width: 50%;
+    height: 75%;
+}
+
+#general-submit {
+    position: absolute;
+    bottom: -15%;
+    width: 25%;
+    height: 25px;
+}
+
 #avatar-display {
+    margin-left: 75%;
     width: 175px;
     height: 175px;
     cursor: pointer;
     border-radius: 100px;
     border: 2px solid black;
     transition: all 0.1s ease;
+    margin-top: 55%;
+}
+#avatar-label {
+    margin-left: 75%;
+    margin-top: 10px;
+    width: 100%;
 }
 
 #avatar-display:active {
@@ -46,31 +159,10 @@ body {
 }
 
 #bg-color {
-    width: 15%; 
     height: 30px; 
     background-color: rgba(0, 0, 0, 0.1);
 }
 
-
-#image-card {
-    background: white; 
-    position: absolute; 
-    height: 70vh;
-    width: 50vw;
-    top: 75px;
-    right: 400px;
-    opacity: 1;
-}
-
-#background-card {
-    visibility: hidden; 
-    position: absolute; 
-    background: rgba(0, 0, 0, 0.5); 
-    height: 100%; 
-    width: 100%; 
-    top: 0px; 
-    left: 0"
-}
 
 #socials {
     display: flex;
@@ -197,6 +289,34 @@ button:hover:disabled {
     background: rgb(219, 2, 2);
 }
 
+#error-container {
+    width: 100%;
+    right: 0;
+    background-color: red;
+    position: fixed;
+    bottom: 0;
+    height: 10%;
+    margin: 0 auto;
+    transition: all 0.1s linear;
+    z-index: 6;
+}
+
+#error-exit {
+    position: absolute;
+    right: 15;
+    width: 50px;
+    height: 60%;
+    top: 5;
+    font-size: 2em;
+    text-align: center;
+    background: none;
+    color: white;
+}
+
+.invisible {
+    transform: translateY(100%);
+}
+
 @media only screen and (max-width: 1024px) {
 
 
@@ -210,6 +330,29 @@ button:hover:disabled {
         width: 100%;
         background-color: rgb(72, 73, 73);
         color: white;
+    }
+
+    #general-info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .general-inner {
+        margin: 0;
+    }
+
+    #general-submit {
+        position: static;
+        margin-top: 10%;
+    }
+
+    #avatar-display, 
+    #avatar-label {
+        margin: 0;
+    }
+    #avatar-display {
+        margin-top: 10%;
+        margin-bottom: 5%;
     }
 
     #avatar-display:active {

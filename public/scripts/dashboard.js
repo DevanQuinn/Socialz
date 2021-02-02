@@ -5,7 +5,6 @@ const user = {
     location: document.getElementById('location'),
     bio: document.getElementById('bio'),
     color: document.getElementById('bg-color'),
-    profiles: []
 }
 
 const initColor = () =>
@@ -24,6 +23,93 @@ const initColor = () =>
         prevColor = val;
     })
 }
+
+const cardContainer = document.getElementById('card-container');
+const imgCard = document.getElementById('image-card');
+const cardDelete = document.getElementById('card-delete');
+const fillForm = (e) =>
+{
+    e.preventDefault();
+    const node = e.target.parentNode.parentNode;
+    const index = node.style.order - 1;
+    const social = user.socials[index];
+    console.log(social);
+    const arr = ['name', 'link'];
+    arr.forEach(el =>
+    {
+        const input = document.getElementById(`card-${el}`);
+        input.value = social[el];
+    })
+    showCard(e);
+    const submitBtn = document.getElementById('card-submit');
+    submitBtn.addEventListener('click', (event) =>
+    {
+        let url;
+        event.preventDefault();
+        const name = document.getElementById('card-name').value;
+        const link = document.getElementById('card-link').value;
+
+        try
+        {
+            url = new URL(link);
+        } catch {
+            return setErrorMsg('Link is not in the correct format.');
+        }
+        enablePublish();
+        const newSocials = {
+            index,
+            name,
+            link,
+        }
+
+        showCard(event, newSocials);
+        
+        
+    })
+    cardDelete.addEventListener('click', (event) => deleteSocial(event, node.parentNode, index));
+}
+
+const deleteSocial = (e, node, index) =>
+{
+    e.preventDefault();
+    const deleteEvent = new Event('delete');
+    node.removeChild(document.getElementById('form' + (index + 1)));
+    user.socials.splice(index, 1);
+    for (let i = index + 1; i <= user.socials.length; i++)
+        {
+            document.getElementById('form' + (i + 1)).dispatchEvent(deleteEvent);
+    }
+    enablePublish();
+    showCard(e);
+}
+
+const showCard = (e, newSocials = null) =>
+{
+    e.preventDefault();
+    // imgCard.classList.toggle('shrink');
+    const visibility = cardContainer.style.visibility;
+    if (visibility == 'hidden')
+    {
+        imgCard.classList.remove('shrink');
+        cardContainer.style.visibility = 'visible';
+    }
+    else
+    {
+        imgCard.classList.add('shrink');
+        setTimeout(() =>
+        {
+            cardContainer.style.visibility = 'hidden';
+        }, 100)
+        if (newSocials)
+        {
+            const social = user.socials[newSocials.index];
+            social.name = newSocials.name;
+            social.link = newSocials.link;
+            refreshProfiles(newSocials.index);
+        }
+    }
+}
+document.getElementById('background-card').onclick = showCard;
 
 const handleReload = (e) => 
 {
@@ -50,36 +136,6 @@ const disablePublish = () =>
 let socialImages = {
     loaded: false,
     images: []
-}
-const showImageCard = async () =>
-{
-    const backgroundCard = document.getElementById('background-card');
-    const imageCard = document.getElementById('image-card');
-    const cardClose = document.getElementById('card-close');
-    backgroundCard.style.visibility = 'visible';
-    cardClose.addEventListener('click', () => backgroundCard.style.visibility = 'hidden');
-    // if (!socialImages.loaded)
-    // {
-    //     await fetch('/dashboard/api/image').then(async res =>
-    //     {
-    //         const resJson = await res.json();
-    //         socialImages.images = resJson.images;
-    //         socialImages.path = resJson.path;
-    //         socialImages.loaded = true;
-    //     })
-    //     // socialImages.images.forEach(e =>
-    //     // {
-    //     //     const image = document.createElement('img');
-            
-    //     //     imageCard.appendChild(image);
-    //     // })
-    // }
-    await fetch('/api/dashboard/request/image').then(res => res.blob()).then(image =>
-    {
-        const imageNode = document.createElement('img');
-        imageCard.appendChild(imageNode);
-        imageNode.setAttribute('src', URL.createObjectURL(image));
-    })
 }
 
 //Submit form update to database
@@ -140,7 +196,7 @@ const optimizeImg = (e, blobProp, urlProp) =>
 
 let activeElement;
 //Adds a form with appropriate input fields and order functionality
-const addSocialForm = (index = 1, nameText = '', linkText = '') =>
+const addSocialForm = (index = 1, nameText = '', linkText = '', isNew = false) =>
 {
     //Container to deal with order of forms
     const formContainer = document.createElement('form');
@@ -237,30 +293,14 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
     formLinkLabel.setAttribute('for', 'link');
     formLinkLabel.innerText = 'Link';
 
-    //Set image button
-    const formImgInput = document.createElement('input');
-    formImgInput.type = 'file';
-    formImgInput.setAttribute('allow', 'image/*');
-    const formImg = document.createElement('button');
-    formImg.className = 'social-img-button';
-    formImg.type = 'button';
-    formImg.innerText = '🖼️';
-    formImg.addEventListener('click', (e) => formImgInput.click());
-
-
     //Save/Edit button
-    const saveBtn = document.createElement('button');
-    saveBtn.type = 'submit';
-    saveBtn.innerText = 'Edit';
-    saveBtn.className = 'save-button';
+    const editBtn = document.createElement('button');
+    editBtn.type = 'submit';
+    editBtn.innerText = 'Edit';
+    editBtn.className = 'save-button';
 
-    //Delete button
-    const deleteBtn = document.createElement('button');
-    deleteBtn.setAttribute('tabindex', -1);
-    deleteBtn.type = 'button';
-    deleteBtn.style.visibility = 'hidden';
-    deleteBtn.innerText = '🗑️';
-    deleteBtn.className = 'delete-button';
+    editBtn.onclick = fillForm;
+
     formContainer.addEventListener('delete', () =>
     {
         //FIXME: fix wonky behavior when deleting after reordering
@@ -271,85 +311,28 @@ const addSocialForm = (index = 1, nameText = '', linkText = '') =>
         indexView.innerText = orderIndex;
         
     })
-    deleteBtn.addEventListener('click', (e) =>
-    {
-        const deleteEvent = new Event('delete');
-        e.preventDefault();
-        socialContainer.removeChild(document.getElementById('form' + orderIndex));
-        user.socials.splice(orderIndex - 1, 1);
-        for (let i = orderIndex; i <= user.socials.length; i++)
-        {
-            document.getElementById('form' + (i + 1)).dispatchEvent(deleteEvent);
-        }
-        publishBtn.disabled = false;
-    })
-
-    //Error text (under the form)
-    const errorText = document.createElement('p');
-    errorText.style.color = 'red';
-
-    const editSocial = e =>
-    {
-        e.preventDefault();
-        disablePublish();
-        e.target.innerText = 'Save';
-        formName.disabled = false;
-        formLink.disabled = false;
-        e.target.onclick = saveSocial;
-        dragger.style.visibility = 'hidden';
-        dragger.style.pointerEvents = 'none';
-        deleteBtn.style.visibility = 'visible';
-        formName.focus();
-        formName.select();
-    }
-    const saveSocial = e =>
-    {
-        e.preventDefault();
-        try { const url = new URL(formLink.value) }
-        catch
-        { 
-            errorText.innerText = 'Invalid URL';
-            const removeText = (e) =>
-            {
-                errorText.innerText = null;
-                e.target.removeEventListener('input', removeText);
-            }
-            formLink.addEventListener('input', removeText);
-            return;
-        }
-        e.target.innerText = 'Edit';
-        user.socials[orderIndex - 1].name = formName.value;
-        user.socials[orderIndex - 1].link = formLink.value;
-        formName.disabled = true;
-        formLink.disabled = true;
-        e.target.onclick = editSocial;
-        enablePublish();
-        dragger.style.visibility = 'visible';
-        dragger.style.pointerEvents = 'all';
-        deleteBtn.style.visibility = 'hidden';
-    };
-    saveBtn.onclick = editSocial;
-    if (linkText == '')
-    {
-        saveBtn.click();
-        setTimeout(() => formName.focus(), 0)
-    }
 
     //Append all elements to the individual form
     // form.appendChild(formNameLabel);
     form.appendChild(dragger);
-    form.appendChild(deleteBtn);
     form.appendChild(formName);
     // form.appendChild(formLinkLabel);
     form.appendChild(formLink);
-    form.appendChild(formImg);
-    form.appendChild(saveBtn);
-    form.appendChild(errorText);
+    form.appendChild(editBtn);
+
+    if (isNew) editBtn.click();
 }
 
-const refreshProfiles = () =>
+const refreshProfiles = (index = null) =>
 {
     const socialContainer = document.getElementById('socials');
+    if (index)
+    {
+        const child = Array.from(socialContainer.children)[index];
+        socialContainer.removeChild(child);
+        addSocialForm(index + 1, user.socials[index].name, user.socials[index].link)
+        return;
+    }
     Array.from(socialContainer.children).forEach(e =>
     {
         socialContainer.removeChild(e);
@@ -360,19 +343,28 @@ const refreshProfiles = () =>
     })
 }
 
+const loginIntervalCheck = id =>
+{
+    fetch('/api/cookies/request/_id').then(result => result.json())
+        .then(resultJson =>
+        {
+            const _id = resultJson?.doc?._id;
+            if (id != _id) location.reload();
+        })
+        .catch(() => location.reload());
+}
 //Fetch user info on page load
 const fetchSocials = async () =>
 {
     await fetch('/api/dashboard/request').then(res =>
     {
-        if (res.status != 200)
-        {
-            location.replace('/p/login');
-            return;
-        }
+        if (res.status != 200) return location.replace('/p/login');
+
         res.json().then(resJson =>
         {
             const profile = resJson.profile;
+            setInterval(() => loginIntervalCheck(profile._id), 10000);
+
             user.id = profile._id;
             user.displayName.value = profile.displayName;
             user.location.value = profile.location;
@@ -440,7 +432,7 @@ addProfileButton.addEventListener('click', () =>
         link: '',
     });
     const index = user.socials.length;
-    addSocialForm(index);
+    addSocialForm(index, '', '', true);
 })
 generalSubmitButton.addEventListener('click', (e) =>
 {
@@ -457,4 +449,15 @@ generalSubmitButton.addEventListener('click', (e) =>
         },
         body: formData//JSON.stringify(newVals)
     }).then(res => console.log(res)).catch(err => console.log(err))
+})
+
+const errorContainer = document.getElementById('error-container');
+const errorMsg = document.getElementById('error-msg');
+const errorExit = document.getElementById('error-exit');
+errorExit.onclick = () => errorContainer.classList.add('invisible');
+
+const setErrorMsg = ((msg = 'An error has occurred.') =>
+{
+    errorContainer.classList.remove('invisible');
+    errorMsg.innerText = msg;
 })

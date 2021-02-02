@@ -13,37 +13,66 @@
     <input id="user-link" readonly="readonly" ></input>
     <button type="button" id="user-copy">Copy 📋</button>
     <button type="button" id="user-button">Open 🔗</button>
+
+    <h3 class="heading">About Yourself</h3>
     <form id="general-info" enctype="multipart/form-data">
-        <h3 class="heading">About Yourself</h3>
 
-        <img id="avatar-display" name="avatar-upload" class="general-input" />
-        <label for="avatar-upload">Edit Avatar</label>
-        <input type="file" accept="image/*" name="avatar" id="avatar" class="general-input hidden"/>
+        <div class="general-inner">
+            <img id="avatar-display" name="avatar-upload" class="general-input" src="../src/loading_gif.gif"/>
+            <label for="avatar-upload" id="avatar-label">Edit Avatar</label>
+        </div>
+        <div class="general-inner">
 
-        <label for="displayName">Display Name</label>
-        <input id="display-name" name="displayName" class="general-input"/>
-
-        <label for="location">Location</label>
-        <input id="location" name="location" class="general-input"/>
-     
-        <label for="bio">Bio</label>
-        <input id="bio" name="bio"class="general-input" />
-
-        <label for="color">Background Color</label>
-        <input id="bg-color" type="color" name="color" class="general-input"/>
+            <input type="file" accept="image/*" name="avatar" id="avatar" class="general-input hidden"/>
+    
+            <label for="displayName">Display Name</label>
+            <input id="display-name" name="displayName" class="general-input"/>
+    
+            <label for="location">Location</label>
+            <input id="location" name="location" class="general-input"/>
+         
+            <label for="bio">Bio</label>
+            <input id="bio" name="bio"class="general-input" />
+    
+            <label for="color">Background Color</label>
+            <input id="bg-color" type="color" name="color" class="general-input"/>
+        </div>
 
         <button id="general-submit">Save</button>
     </form>
-    
-    <!-- <span id="background-card">
-        <button type="button" id="card-close">Close</button>
-        <div id="image-card"></div>
-    </span> -->
+    <span id="card-container" style="visibility: hidden;">
+        
+        <div id="image-card" class="shrink">
+            <form id="card-form">
+                
+                <label for="img">Image</label>
+                <input type="file" id="card-img" accept="image/*" name="img"/>
+
+                <label for="name">Username</label>
+                <input placeholder="Jeff" id="card-name" name="name" />
+
+                <label for="desc">Description</label>
+                <input placeholder="My myLinked profile" id="card-desc" name="desc" />
+
+                <label for="link">Link</label>
+                <input placeholder="https://mylinked.io/jeff" id="card-link" name="link" />
+            </form>
+            <button type="button" id="card-submit">Save</button>
+            <button type="button" id="card-delete" style="background-color: red;">Delete</button>
+        </div>
+        <div id="background-card"></div>
+    </span>
     <h3 class="heading">Links</h3>
     <div id="socials">
     </div>
     <button id="add-profile">Add Link</button>
     <button id="socials-submit" disabled>Publish Changes</button>
+
+    <div id="error-container" class="invisible">
+        <p id="error-msg"></p>
+        <button type="button" id="error-exit">X</button>
+    </div>
+
     <script src="../scripts/dashboard.js"></script>
 </body>
 </html>
